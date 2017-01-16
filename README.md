@@ -84,7 +84,7 @@ Constrain the crop region to a maximum size.
 * Default: `null`
 * Example: `maxSize: [50, 50, '%']` (A maximum size of 50% of the image size)
 
-_Note: `unit` accepts a value of **'px'** or **'%'**. It is optional and defaults to **'px'**._
+_Note: `unit` accepts a value of **'px'** or **'%'**. Defaults to **'px'**._
 
 
 
@@ -94,9 +94,9 @@ Constrain the crop region to a minimum size.
 
 - Type: `[width, height, unit?]`
 - Default: `null`
-- Example: `minSize: [20, 20, 'px']` (A minimum size of 50% of the image size)
+- Example: `minSize: [20, 20, 'px']` (A minimum width and height of 20px)
 
-_Note: `unit` accepts a value of **'px'** or **'%'**. It is optional and defaults to **'px'**._
+_Note: `unit` accepts a value of **'px'** or **'%'**. Defaults to **'px'**._
 
 
 
@@ -108,7 +108,7 @@ The starting size of the crop region when it is initialized.
 - Default: `[100, 100, '%']` (A starting crop region as large as possible)
 - Example: `startSize: [50, 50]` (A starting crop region of 50% of the image size)
 
-_Note: `unit` accepts a value of **'px'** or **'%'**. It is optional and defaults to **'%'**._
+_Note: `unit` accepts a value of **'px'** or **'%'**. Defaults to **'%'**._
 
 
 
@@ -120,11 +120,9 @@ A callback function that is called when the crop region is updated.
 * Arguments: `data = {x, y, width, height}`
 * Example:
 ```javascript
-  {
-    onUpdate: function(data) {
-      console.log(data.x, data.y, data.width, data.height);
-    }
-  }
+onUpdate: function(data) {
+  console.log(data.x, data.y, data.width, data.height);
+}
 ```
 
 
@@ -137,7 +135,7 @@ Define how the crop region should be calculated.
 * Default: `"real"`
 * Possible values: `"real"`, `"ratio"` or `"raw"`
   * `real` returns the crop region values based on the size of the image's actual sizes. This ensures that the crop region values are the same regardless if the Croppr element is scaled or not.
-  * `ratio` returns the crop region values as a ratio between 0 to 1. e.g. An `x, y` position at the center will be `{x: 0.5,  y: 0.5}`.
+  * `ratio` returns the crop region values as a ratio between 0 to 1. e.g. For example, an `x, y` position at the center will be `{x: 0.5, y: 0.5}`.
   * `raw` returns the crop region values as is based on the size of the Croppr element.
 
 
@@ -146,35 +144,15 @@ Define how the crop region should be calculated.
 
 #### **getValue(_returnMode?: string_)**
 
-Returns the value of the crop region. Refer to [returnMode](#returnmode) for possible values. Inherits from options by default.
+Returns the value of the crop region. `returnMode` inherits from options by default. Refer to [returnMode](#returnmode) for possible values.
 
 ```javascript
 var value = cropInstance.getValue();
 // value = {x: 21, y: 63: width: 120, height: 120}
+
+var ratio = cropInstance.getValue('ratio');
+// value = {x: 0.1, y: 0.3: width: 0.57, height: 0.57}
 ```
 
-
-
-## License
-
-MIT License
-
-Copyright (c) 2017 James Ooi
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+Copyright © 2017 James Ooi.
+Released under the MIT License.
