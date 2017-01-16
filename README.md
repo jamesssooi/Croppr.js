@@ -6,26 +6,25 @@ A JavaScript image cropper that's lightweight, awesome, and has absolutely zero 
 * Lightweight (4kb minified and gzipped)
 * Zero dependencies
 
-[Try it out in the demo →](https://google.com)
-
-
+Try it out in the demo →
+_Demo in progress_
 
 ## Installation
 
 **Via NPM:**
 
 ```
-npm install croppr-js —save
+npm install croppr -—save
 ```
 
 ```javascript
 // CommonJS
-var Croppr = require('croppr-js');
+var Croppr = require('croppr');
 
 // ES6 import
-import Croppr from 'croppr-js';
+import Croppr from 'croppr';
 ```
-_Note: Don't forget to bundle croppr.css!_
+_Note: Don't forget to bundle or include croppr.css!_
 
 **Via script tag:**
 
@@ -33,8 +32,6 @@ _Note: Don't forget to bundle croppr.css!_
 <script src="path/to/croppr.js"></script>
 <link src="path/to/croppr.css" rel="stylesheet"/>
 ```
-_Note: The `Croppr` constructor will be available globally._
-
 
 
 ## Basic Usage
