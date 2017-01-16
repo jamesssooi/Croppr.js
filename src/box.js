@@ -1,6 +1,5 @@
 /**
  * Box component
- * (C) 2017 James Ooi
  */
 export default class Box {
     /**

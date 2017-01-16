@@ -73,8 +73,8 @@ export default class Croppr {
     /**
      * Gets the value of the crop region.
      */
-    getValue() {
-        const mode = this.options.returnMode;
+    getValue(mode = null) {
+        if (mode === null) { mode = this.options.returnMode; }
         if (mode == 'real') {
             const actualWidth = this.imageEl.naturalWidth;
             const actualHeight = this.imageEl.naturalHeight;

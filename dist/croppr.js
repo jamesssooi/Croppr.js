@@ -174,7 +174,6 @@ function Handle(position, constraints, cursor, eventBus) {
 
 /**
  * Box component
- * (C) 2017 James Ooi
  */
 var Box = function () {
     /**
@@ -551,7 +550,11 @@ var Croppr$1 = function () {
     createClass(Croppr, [{
         key: 'getValue',
         value: function getValue() {
-            var mode = this.options.returnMode;
+            var mode = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+
+            if (mode === null) {
+                mode = this.options.returnMode;
+            }
             if (mode == 'real') {
                 var actualWidth = this.imageEl.naturalWidth;
                 var actualHeight = this.imageEl.naturalHeight;
