@@ -704,12 +704,12 @@ var Croppr$1 = function () {
         value: function createDOM(targetEl) {
             // Create main container and use it as the main event listeners
             this.containerEl = document.createElement('div');
-            this.containerEl.className = 'cropper-container';
+            this.containerEl.className = 'croppr-container';
             this.eventBus = this.containerEl;
 
             // Create cropper element
             this.cropperEl = document.createElement('div');
-            this.cropperEl.className = 'cropper';
+            this.cropperEl.className = 'croppr';
 
             // Create image element
             if (!targetEl.getAttribute('src')) {
@@ -718,23 +718,23 @@ var Croppr$1 = function () {
             this.imageEl = document.createElement('img');
             this.imageEl.setAttribute('src', targetEl.getAttribute('src'));
             this.imageEl.setAttribute('alt', targetEl.getAttribute('alt'));
-            this.imageEl.className = 'cropper-image';
+            this.imageEl.className = 'croppr-image';
 
             // Create clipped image element
             this.imageClippedEl = this.imageEl.cloneNode();
-            this.imageClippedEl.className = 'cropper-imageClipped';
+            this.imageClippedEl.className = 'croppr-imageClipped';
 
             // Create region box element
             this.regionEl = document.createElement('div');
-            this.regionEl.className = 'cropper-region';
+            this.regionEl.className = 'croppr-region';
 
             // Create overlay element
             this.overlayEl = document.createElement('div');
-            this.overlayEl.className = 'cropper-overlay';
+            this.overlayEl.className = 'croppr-overlay';
 
             // Create handles element
             var handleContainerEl = document.createElement('div');
-            handleContainerEl.className = 'cropper-handleContainer';
+            handleContainerEl.className = 'croppr-handleContainer';
             this.handles = [];
             for (var i = 0; i < HANDLES.length; i++) {
                 var handle = new Handle(HANDLES[i].position, HANDLES[i].constraints, HANDLES[i].cursor, this.eventBus);

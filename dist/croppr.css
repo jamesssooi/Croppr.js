@@ -1,4 +1,4 @@
-.cropper-container * {
+.croppr-container * {
     user-select: none;
     -moz-user-select: none;
     -webkit-user-select: none;
@@ -8,16 +8,16 @@
     -moz-box-sizing: border-box;
 }
 
-.cropper-container img {
+.croppr-container img {
     vertical-align: middle;
 }
 
-.cropper {
+.croppr {
     position: relative;
     display: inline-block;
 }
 
-.cropper-overlay {
+.croppr-overlay {
     background: rgba(0,0,0,0.5);
     position: absolute;
     top: 0;
@@ -27,14 +27,14 @@
     z-index: 1;
 }
 
-.cropper-region {
+.croppr-region {
     border: 1px dashed rgba(255, 255, 255, 0.5);
     position: absolute;
     z-index: 3;
     cursor: move;
 }
 
-.cropper-imageClipped {
+.croppr-imageClipped {
     position: absolute;
     top: 0;
     right: 0;
@@ -44,7 +44,7 @@
     pointer-events: none;
 }
 
-.cropper-handle {
+.croppr-handle {
     border: 1px solid black;
     background-color: white;
     border-radius: 30px 30px;
