@@ -25,16 +25,15 @@ var Croppr = require('croppr-js');
 // ES6 import
 import Croppr from 'croppr-js';
 ```
-_Reminder: Don't forget to bundle croppr.css!_
+_Note: Don't forget to bundle croppr.css!_
 
 **Via script tag:**
 
-```
+```html
 <script src="path/to/croppr.js"></script>
 <link src="path/to/croppr.css" rel="stylesheet"/>
 ```
-
-The `Croppr` constructor will be available globally.
+_Note: The `Croppr` constructor will be available globally._
 
 
 
