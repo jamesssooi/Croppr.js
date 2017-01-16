@@ -65,7 +65,7 @@ var data = cropInstance.getValue();
 
 ## Options
 
-**aspectRatio**
+####**aspectRatio**
 
 Constrain the crop region to an aspect ratio.
 
@@ -75,75 +75,60 @@ Constrain the crop region to an aspect ratio.
 
 
 
-
-
-**maxSize**
+#### **maxSize**
 
 Constrain the crop region to a maximum size.
 
 * Type: `[width, height, unit?]`
-
-
 * Default: `null`
-
-
-* Example: `[50, 50, '%']` (A maximum size of 50% of the image size)
+* Example: `maxSize: [50, 50, '%']` (A maximum size of 50% of the image size)
 
 _Note: `unit` accepts a value of **'px'** or **'%'**. It is optional and defaults to **'px'**._
 
 
 
-**minSize**
+#### **minSize**
 
 Constrain the crop region to a minimum size.
 
 - Type: `[width, height, unit?]`
-
-
 - Default: `null`
-
-
-- Example: `[20, 20, 'px']` (A minimum size of 50% of the image size)
+- Example: `minSize: [20, 20, 'px']` (A minimum size of 50% of the image size)
 
 _Note: `unit` accepts a value of **'px'** or **'%'**. It is optional and defaults to **'px'**._
 
 
 
-**startSize**
+#### **startSize**
 
 The starting size of the crop region when it is initialized.
 
 - Type: `[width, height, unit?]`
-
-
 - Default: `[100, 100, '%']` (A starting crop region as large as possible)
-
-
-- Example: `[50, 50]` (A starting crop region of 50% of the image size)
+- Example: `startSize: [50, 50]` (A starting crop region of 50% of the image size)
 
 _Note: `unit` accepts a value of **'px'** or **'%'**. It is optional and defaults to **'%'**._
 
 
 
-**onUpdate**
+#### **onUpdate**
 
 A callback function that is called when the crop region is updated.
 
 * Type: `Function`
 * Arguments: `data = {x, y, width, height}`
-
-
 * Example:
-
 ```javascript
-  function(data) {
-    console.log(data.x, data.y, data.width, data.height);
+  {
+    onUpdate: function(data) {
+      console.log(data.x, data.y, data.width, data.height);
+    }
   }
 ```
 
 
 
-**returnMode**
+#### **returnMode**
 
 Define how the crop region should be calculated.
 
@@ -158,7 +143,7 @@ Define how the crop region should be calculated.
 
 ## Methods
 
-**getValue(**_returnMode?: string_**)**
+#### **getValue(**_returnMode?: string_**)**
 
 Returns the value of the crop region. Refer to `returnMode` in [Section: Options](#options) for possible values. Inherits from options by default.
 
