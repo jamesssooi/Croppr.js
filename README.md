@@ -145,7 +145,7 @@ Define how the crop region should be calculated.
 
 #### **getValue(_returnMode?: string_)**
 
-Returns the value of the crop region. Refer to `returnMode` in [Options: returnMode](#returnmode) for possible values. Inherits from options by default.
+Returns the value of the crop region. Refer to [returnMode](#returnmode) for possible values. Inherits from options by default.
 
 ```javascript
 var value = cropInstance.getValue();
