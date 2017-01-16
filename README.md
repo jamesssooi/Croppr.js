@@ -12,7 +12,7 @@ A JavaScript image cropper that's lightweight, awesome, and has absolutely zero 
 
 ## Installation
 
-Via NPM:
+**Via NPM:**
 
 ```
 npm install croppr-js —save
@@ -20,16 +20,18 @@ npm install croppr-js —save
 
 ```javascript
 // CommonJS
-var Croppr = require('cropper-js');
+var Croppr = require('croppr-js');
 
 // ES6 import
-import Croppr from 'cropper-js';
+import Croppr from 'croppr-js';
 ```
+_Reminder: Don't forget to bundle croppr.css!_
 
-Via `<script>` tag:
+**Via script tag:**
 
 ```
 <script src="path/to/croppr.js"></script>
+<link src="path/to/croppr.css" rel="stylesheet"/>
 ```
 
 The `Croppr` constructor will be available globally.
@@ -38,13 +40,13 @@ The `Croppr` constructor will be available globally.
 
 ## Basic Usage
 
-In your HTML document:
+**In your HTML document:**
 
 ```html
 <img src="path/to/image.jpg" id="croppr"/>
 ```
 
-In your JavaScript document:
+**In your JavaScript file:**
 
 ```javascript
 var cropInstance = new Croppr('#croppr', {
@@ -54,7 +56,7 @@ var cropInstance = new Croppr('#croppr', {
 
 _Protip: You can also pass an `Element` object directly instead of a selector._
 
-To retrieve crop region:
+**To retrieve crop region:**
 
 ```javascript
 var data = cropInstance.getValue();
