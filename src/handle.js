@@ -25,7 +25,7 @@ export default class Handle {
 
         // Create DOM element
         this.el = document.createElement('div');
-        this.el.className = 'cropper-handle';
+        this.el.className = 'croppr-handle';
         this.el.style.cursor = cursor;
 
         // Attach initial listener
