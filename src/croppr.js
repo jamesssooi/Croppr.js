@@ -45,6 +45,9 @@ export default class Croppr {
             element = document.querySelector(element);
             if (element == null) { throw 'Unable to find element.'}
         }
+        if (!element.getAttribute('src')) {
+            throw 'Image src not provided.'
+        }
 
         // Wait until image is loaded before proceeding
         if (element.width === 0 || element.height === 0) {
@@ -224,9 +227,6 @@ export default class Croppr {
         this.cropperEl.className = 'croppr';
 
         // Create image element
-        if (!targetEl.getAttribute('src')) {
-            throw 'Image src not provided.'
-        }
         this.imageEl = document.createElement('img');
         this.imageEl.setAttribute('src', targetEl.getAttribute('src'));
         this.imageEl.setAttribute('alt', targetEl.getAttribute('alt'));
