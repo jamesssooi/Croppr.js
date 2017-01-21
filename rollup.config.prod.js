@@ -14,7 +14,7 @@ var banner = `/**
 `
 
 export default {
-  entry: 'src/main.js',
+  entry: 'src/index.js',
   plugins: [ json(), babel(), uglify() ],
   format: 'umd',
   moduleName: 'Croppr',

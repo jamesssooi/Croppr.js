@@ -44,6 +44,46 @@ var createClass = function () {
 
 
 
+var get = function get(object, property, receiver) {
+  if (object === null) object = Function.prototype;
+  var desc = Object.getOwnPropertyDescriptor(object, property);
+
+  if (desc === undefined) {
+    var parent = Object.getPrototypeOf(object);
+
+    if (parent === null) {
+      return undefined;
+    } else {
+      return get(parent, property, receiver);
+    }
+  } else if ("value" in desc) {
+    return desc.value;
+  } else {
+    var getter = desc.get;
+
+    if (getter === undefined) {
+      return undefined;
+    }
+
+    return getter.call(receiver);
+  }
+};
+
+var inherits = function (subClass, superClass) {
+  if (typeof superClass !== "function" && superClass !== null) {
+    throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
+  }
+
+  subClass.prototype = Object.create(superClass && superClass.prototype, {
+    constructor: {
+      value: subClass,
+      enumerable: false,
+      writable: true,
+      configurable: true
+    }
+  });
+  if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
+};
 
 
 
@@ -55,10 +95,13 @@ var createClass = function () {
 
 
 
+var possibleConstructorReturn = function (self, call) {
+  if (!self) {
+    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+  }
 
-
-
-
+  return call && (typeof call === "object" || typeof call === "function") ? call : self;
+};
 
 
 
@@ -480,13 +523,8 @@ var Box = function () {
 }();
 
 /**
- * Croppr.js
- * https://github.com/jamesssooi/Croppr.js
- * 
- * A JavaScript image cropper that's lightweight, awesome, and has
- * zero dependencies.
- * 
- * (C) 2017 James Ooi. Released under the MIT License.
+ * CropprCore
+ * Here lies the main logic.
  */
 
 /**
@@ -501,14 +539,20 @@ var Box = function () {
  */
 var HANDLES = [{ position: [0.0, 0.0], constraints: [1, 0, 0, 1], cursor: 'nw-resize' }, { position: [0.5, 0.0], constraints: [1, 0, 0, 0], cursor: 'n-resize' }, { position: [1.0, 0.0], constraints: [1, 1, 0, 0], cursor: 'ne-resize' }, { position: [1.0, 0.5], constraints: [0, 1, 0, 0], cursor: 'e-resize' }, { position: [1.0, 1.0], constraints: [0, 1, 1, 0], cursor: 'se-resize' }, { position: [0.5, 1.0], constraints: [0, 0, 1, 0], cursor: 's-resize' }, { position: [0.0, 1.0], constraints: [0, 0, 1, 1], cursor: 'sw-resize' }, { position: [0.0, 0.5], constraints: [0, 0, 0, 1], cursor: 'w-resize' }];
 
-var Croppr$1 = function () {
-    function Croppr(element, options) {
-        classCallCheck(this, Croppr);
+/**
+ * Core class for Croppr containing most of its functional logic.
+ */
 
-        var self = this;
+var CropprCore = function () {
+    function CropprCore(element, options) {
+        var _this = this;
 
-        // Get options
-        self.options = self.parseOptions(options || {});
+        var deferred = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+        classCallCheck(this, CropprCore);
+
+
+        // Parse options
+        this.options = CropprCore.parseOptions(options || {});
 
         // Get target img element
         if (!element.nodeName) {
@@ -521,185 +565,53 @@ var Croppr$1 = function () {
             throw 'Image src not provided.';
         }
 
+        // Define internal props
+        this._initialized = false;
+        this._targetEl = element;
+
         // Wait until image is loaded before proceeding
-        if (element.width === 0 || element.height === 0) {
-            element.onload = activate.bind(self);
-        } else {
-            activate();
-        }
-
-        function activate() {
-            // Create the DOM elements
-            self.createDOM(element);
-
-            // Convert % values to px;
-            self.options.convertToPixels(this.cropperEl);
-
-            // Listen for events from childrens
-            this.attachHandlerEvents(this.eventBus);
-            this.attachRegionEvents(this.eventBus);
-
-            // Bootstrap this cropper instance
-            self.box = self.createInitialBox();
-            self.redraw(self.box);
+        if (!deferred) {
+            if (element.width === 0 || element.height === 0) {
+                element.onload = function () {
+                    _this.initialize();
+                };
+            } else {
+                this.initialize();
+            }
         }
     }
 
     /**
-     * Gets the value of the crop region.
+     * Initialize the Croppr instance
      */
 
 
-    createClass(Croppr, [{
-        key: 'getValue',
-        value: function getValue() {
-            var mode = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+    createClass(CropprCore, [{
+        key: 'initialize',
+        value: function initialize() {
+            // Create DOM elements
+            this.createDOM(this._targetEl);
 
-            if (mode === null) {
-                mode = this.options.returnMode;
-            }
-            if (mode == 'real') {
-                var actualWidth = this.imageEl.naturalWidth;
-                var actualHeight = this.imageEl.naturalHeight;
-                var factorX = actualWidth / this.imageEl.offsetWidth;
-                var factorY = actualHeight / this.imageEl.offsetHeight;
-                return {
-                    x: Math.round(this.box.x1 * factorX),
-                    y: Math.round(this.box.y1 * factorY),
-                    width: Math.round(this.box.width() * factorX),
-                    height: Math.round(this.box.height() * factorY)
-                };
-            } else if (mode == 'ratio') {
-                var elementWidth = this.imageEl.offsetWidth;
-                var elementHeight = this.imageEl.offsetHeight;
-                return {
-                    x: round(this.box.x1 / elementWidth, 3),
-                    y: round(this.box.y1 / elementHeight, 3),
-                    width: round(this.box.width() / elementWidth, 3),
-                    height: round(this.box.height() / elementHeight, 3)
-                };
-            } else if (mode == 'raw') {
-                return {
-                    x: Math.round(this.box.x1),
-                    y: Math.round(this.box.y1),
-                    width: Math.round(this.box.width()),
-                    height: Math.round(this.box.height())
-                };
+            // Convert % values to px
+            this.options.convertToPixels(this.cropperEl);
+
+            // Listen for events from children
+            this.attachHandlerEvents();
+            this.attachRegionEvents();
+
+            // Bootstrap this cropper instance
+            this.box = this.initializeBox(this.options);
+            this.redraw();
+
+            // Set the initalized flag to true and call the callback
+            this._initialized = true;
+            if (this.options.onInitialized !== 'undefined' && typeof this.options.onInitialize === 'function') {
+                this.options.onInitialize(this);
             }
         }
 
         /**
-         * Parse user options and set default values.
-         */
-
-    }, {
-        key: 'parseOptions',
-        value: function parseOptions(opts) {
-            var defaults$$1 = {
-                aspectRatio: null,
-                maxSize: { width: null, height: null },
-                minSize: { width: null, height: null },
-                startSize: { width: 100, height: 100, unit: '%' },
-                returnMode: 'real',
-                onUpdate: function onUpdate() {}
-            };
-
-            // Parse aspect ratio
-            var aspectRatio = null;
-            if (opts.aspectRatio !== undefined) {
-                if (typeof opts.aspectRatio === 'number') {
-                    aspectRatio = opts.aspectRatio;
-                } else if (opts.aspectRatio instanceof Array) {
-                    aspectRatio = opts.aspectRatio[1] / opts.aspectRatio[0];
-                }
-            }
-
-            // Parse max width/height
-            var maxSize = null;
-            if (opts.maxSize !== undefined && opts.maxSize !== null) {
-                maxSize = {
-                    width: opts.maxSize[0] || null,
-                    height: opts.maxSize[1] || null,
-                    unit: opts.maxSize[3] || 'px'
-                };
-            }
-
-            // Parse min width/height
-            var minSize = null;
-            if (opts.minSize !== undefined && opts.minSize !== null) {
-                minSize = {
-                    width: opts.minSize[0] || null,
-                    height: opts.minSize[1] || null,
-                    unit: opts.minSize[3] || 'px'
-                };
-            }
-
-            // Parse start size
-            var startSize = null;
-            if (opts.startSize !== undefined && opts.startSize !== null) {
-                startSize = {
-                    width: opts.startSize[0] || null,
-                    height: opts.startSize[1] || null,
-                    unit: opts.startSize[3] || '%'
-                };
-            }
-
-            // Parse onUpdate callback
-            var onUpdate = null;
-            if (typeof opts.onUpdate === 'function') {
-                onUpdate = opts.onUpdate;
-            }
-
-            // Parse returnMode value
-            var returnMode = null;
-            if (opts.returnMode !== undefined) {
-                var s = opts.returnMode.toLowerCase();
-                if (['real', 'ratio', 'raw'].indexOf(s) === -1) {
-                    throw "Invalid return mode.";
-                }
-                returnMode = s;
-            }
-
-            // Create function to convert % values to pixels
-            var convertToPixels = function convertToPixels(container) {
-                var width = container.offsetWidth;
-                var height = container.offsetHeight;
-
-                // Convert sizes
-                var sizeKeys = ['maxSize', 'minSize', 'startSize'];
-                for (var i = 0; i < sizeKeys.length; i++) {
-                    var key = sizeKeys[i];
-                    if (this[key] !== null) {
-                        if (this[key].unit == '%') {
-                            if (this[key].width !== null) {
-                                this[key].width = this[key].width / 100 * width;
-                            }
-                            if (this[key].height !== null) {
-                                this[key].height = this[key].height / 100 * height;
-                            }
-                        }
-                        delete this[key].unit;
-                    }
-                }
-            };
-
-            var defaultValue = function defaultValue(v, d) {
-                return v !== null ? v : d;
-            };
-            return {
-                aspectRatio: defaultValue(aspectRatio, defaults$$1.aspectRatio),
-                maxSize: defaultValue(maxSize, defaults$$1.maxSize),
-                minSize: defaultValue(minSize, defaults$$1.minSize),
-                startSize: defaultValue(startSize, defaults$$1.startSize),
-                returnMode: defaultValue(returnMode, defaults$$1.returnMode),
-                onUpdate: defaultValue(onUpdate, defaults$$1.onUpdate),
-                convertToPixels: convertToPixels
-            };
-        }
-
-        /**
-         * Creates all the required DOM elements.
-         * @param {Element|String} targetEl An element or element query string.
+         * Create Croppr's DOM elements
          */
 
     }, {
@@ -755,15 +667,14 @@ var Croppr$1 = function () {
         }
 
         /**
-         * Creates the starting crop region.
+         * Create a new box region with a set of options.
+         * @param {Object} opts The options.
+         * @returns {Box}
          */
 
     }, {
-        key: 'createInitialBox',
-        value: function createInitialBox() {
-            // Get options
-            var opts = this.options;
-
+        key: 'initializeBox',
+        value: function initializeBox(opts) {
             // Create initial box
             var width = opts.startSize.width;
             var height = opts.startSize.height;
@@ -791,20 +702,20 @@ var Croppr$1 = function () {
         }
 
         /**
-         * Redraw visuals (border, handles, etc).
-         * @param {Box} box A box object describing the cropped region.
+         * Draw visuals (border, handles, etc) for the current box.
          */
 
     }, {
         key: 'redraw',
-        value: function redraw(box) {
+        value: function redraw() {
+            var _box = this.box,
+                x1 = _box.x1,
+                x2 = _box.x2,
+                y1 = _box.y1,
+                y2 = _box.y2;
 
-            var x1 = box.x1;
-            var x2 = box.x2;
-            var y1 = box.y1;
-            var y2 = box.y2;
-            var width = box.width();
-            var height = box.height();
+            var width = this.box.width(),
+                height = this.box.height();
 
             // Update region element
             this.regionEl.style.left = x1 + 'px';
@@ -836,9 +747,10 @@ var Croppr$1 = function () {
 
     }, {
         key: 'attachHandlerEvents',
-        value: function attachHandlerEvents(eventBus) {
-            eventBus.addEventListener('handlemove', handleMove.bind(this));
-            eventBus.addEventListener('handlestart', handleStart.bind(this));
+        value: function attachHandlerEvents() {
+            var eventBus = this.eventBus;
+            eventBus.addEventListener('handlestart', this.onHandleMoveStart.bind(this));
+            eventBus.addEventListener('handlemove', this.onHandleMoveMoving.bind(this));
         }
 
         /**
@@ -848,10 +760,12 @@ var Croppr$1 = function () {
 
     }, {
         key: 'attachRegionEvents',
-        value: function attachRegionEvents(eventBus) {
+        value: function attachRegionEvents() {
+            var eventBus = this.eventBus;
+
             this.regionEl.addEventListener('mousedown', onMouseDown);
-            eventBus.addEventListener('regionstart', regionStart.bind(this));
-            eventBus.addEventListener('regionmove', regionMove.bind(this));
+            eventBus.addEventListener('regionstart', this.onRegionMoveStart.bind(this));
+            eventBus.addEventListener('regionmove', this.onRegionMoveMoving.bind(this));
 
             function onMouseDown(e) {
                 e.stopPropagation();
@@ -879,203 +793,482 @@ var Croppr$1 = function () {
                 eventBus.dispatchEvent(event);
             }
         }
-    }]);
-    return Croppr;
-}();
 
-function handleStart(e) {
-    var handle = e.detail.handle;
+        /**
+         * EVENT HANDLER
+         * Executes when user begins dragging a handle.
+         */
 
-    // The origin point is the point where the box is scaled from.
-    // This is usually the opposite side/corner of the active handle.
-    var originPoint = [1 - handle.position[0], 1 - handle.position[1]];
+    }, {
+        key: 'onHandleMoveStart',
+        value: function onHandleMoveStart(e) {
+            var handle = e.detail.handle;
 
-    var _box$getAbsolutePoint = this.box.getAbsolutePoint(originPoint),
-        _box$getAbsolutePoint2 = slicedToArray(_box$getAbsolutePoint, 2),
-        originX = _box$getAbsolutePoint2[0],
-        originY = _box$getAbsolutePoint2[1];
+            // The origin point is the point where the box is scaled from.
+            // This is usually the opposite side/corner of the active handle.
+            var originPoint = [1 - handle.position[0], 1 - handle.position[1]];
 
-    this.activeHandle = {
-        handle: handle,
-        originPoint: originPoint,
-        originX: originX,
-        originY: originY
-    };
-}
+            var _box$getAbsolutePoint = this.box.getAbsolutePoint(originPoint),
+                _box$getAbsolutePoint2 = slicedToArray(_box$getAbsolutePoint, 2),
+                originX = _box$getAbsolutePoint2[0],
+                originY = _box$getAbsolutePoint2[1];
 
-/**
- * Main logic to manage the movement of handles.
- * @param {CustomEvent} e Custom event containing the x and y position of
- *      the mouse.
- */
-function handleMove(e) {
-    var _e$detail = e.detail,
-        mouseX = _e$detail.mouseX,
-        mouseY = _e$detail.mouseY;
-
-    // Calculate mouse's position in relative to the container
-
-    var container = this.cropperEl.getBoundingClientRect();
-    mouseX = mouseX - container.left;
-    mouseY = mouseY - container.top;
-
-    // Ensure mouse is within the boundaries
-    if (mouseX < 0) {
-        mouseX = 0;
-    } else if (mouseX > container.width) {
-        mouseX = container.width;
-    }
-
-    if (mouseY < 0) {
-        mouseY = 0;
-    } else if (mouseY > container.height) {
-        mouseY = container.height;
-    }
-
-    // Bootstrap helper variables
-    var origin = this.activeHandle.originPoint.slice();
-    var originX = this.activeHandle.originX;
-    var originY = this.activeHandle.originY;
-    var handle = this.activeHandle.handle;
-    var TOP_MOVABLE = handle.constraints[0] === 1;
-    var RIGHT_MOVABLE = handle.constraints[1] === 1;
-    var BOTTOM_MOVABLE = handle.constraints[2] === 1;
-    var LEFT_MOVABLE = handle.constraints[3] === 1;
-    var MULTI_AXIS = (LEFT_MOVABLE || RIGHT_MOVABLE) && (TOP_MOVABLE || BOTTOM_MOVABLE);
-
-    // Apply movement to respective sides according to the handle's
-    // constraint values.
-    var x1 = LEFT_MOVABLE || RIGHT_MOVABLE ? originX : this.box.x1;
-    var x2 = LEFT_MOVABLE || RIGHT_MOVABLE ? originX : this.box.x2;
-    var y1 = TOP_MOVABLE || BOTTOM_MOVABLE ? originY : this.box.y1;
-    var y2 = TOP_MOVABLE || BOTTOM_MOVABLE ? originY : this.box.y2;
-    x1 = LEFT_MOVABLE ? mouseX : x1;
-    x2 = RIGHT_MOVABLE ? mouseX : x2;
-    y1 = TOP_MOVABLE ? mouseY : y1;
-    y2 = BOTTOM_MOVABLE ? mouseY : y2;
-
-    // Check if the user dragged past the origin point. If it did,
-    // we set the flipped flag to true.
-    var isFlippedX = false,
-        isFlippedY = false;
-
-    if (LEFT_MOVABLE || RIGHT_MOVABLE) {
-        isFlippedX = LEFT_MOVABLE ? mouseX > originX : mouseX < originX;
-    }
-    if (TOP_MOVABLE || BOTTOM_MOVABLE) {
-        isFlippedY = TOP_MOVABLE ? mouseY > originY : mouseY < originY;
-    }
-
-    // If it is flipped, we swap the coordinates and flip the origin point.
-    if (isFlippedX) {
-        var tmp = x1;x1 = x2;x2 = tmp; // Swap x1 and x2
-        origin[0] = 1 - origin[0]; // Flip origin x point
-    }
-    if (isFlippedY) {
-        var _tmp = y1;y1 = y2;y2 = _tmp; // Swap y1 and y2
-        origin[1] = 1 - origin[1]; // Flip origin y point
-    }
-
-    // Create new box object
-    var box = new Box(x1, y1, x2, y2);
-
-    // Maintain aspect ratio
-    if (this.options.aspectRatio) {
-        var ratio = this.options.aspectRatio;
-        var isVerticalMovement = false;
-        if (MULTI_AXIS) {
-            isVerticalMovement = mouseY > box.y1 + ratio * box.width() || mouseY < box.y2 - ratio * box.width();
-        } else if (TOP_MOVABLE || BOTTOM_MOVABLE) {
-            isVerticalMovement = true;
+            this.activeHandle = { handle: handle, originPoint: originPoint, originX: originX, originY: originY };
         }
-        var ratioMode = isVerticalMovement ? 'width' : 'height';
-        box.constrainToRatio(ratio, origin, ratioMode);
-    }
 
-    // Maintain minimum/maximum size
-    var min = this.options.minSize;
-    var max = this.options.maxSize;
-    box.constrainToSize(max.width, max.height, min.width, min.height, origin);
+        /**
+         * EVENT HANDLER
+         * Executes on handle move. Main logic to manage the movement of handles.
+         */
 
-    // Constrain to boundary
-    var parentWidth = this.cropperEl.offsetWidth;
-    var parentHeight = this.cropperEl.offsetHeight;
-    box.constrainToBoundary(parentWidth, parentHeight, origin);
+    }, {
+        key: 'onHandleMoveMoving',
+        value: function onHandleMoveMoving(e) {
+            var _e$detail = e.detail,
+                mouseX = _e$detail.mouseX,
+                mouseY = _e$detail.mouseY;
 
-    // Finally, update the visuals (border, handles, clipped image, etc)
-    this.box = box;
-    this.redraw(this.box);
+            // Calculate mouse's position in relative to the container
 
-    // Call the callback
-    this.options.onUpdate(this.getValue());
-}
+            var container = this.cropperEl.getBoundingClientRect();
+            mouseX = mouseX - container.left;
+            mouseY = mouseY - container.top;
 
-/**
- * Executes when user starts moving the crop region.
- */
-function regionStart(e) {
-    var _e$detail2 = e.detail,
-        mouseX = _e$detail2.mouseX,
-        mouseY = _e$detail2.mouseY;
+            // Ensure mouse is within the boundaries
+            if (mouseX < 0) {
+                mouseX = 0;
+            } else if (mouseX > container.width) {
+                mouseX = container.width;
+            }
 
-    // Calculate mouse's position in relative to the container
+            if (mouseY < 0) {
+                mouseY = 0;
+            } else if (mouseY > container.height) {
+                mouseY = container.height;
+            }
 
-    var container = this.cropperEl.getBoundingClientRect();
-    mouseX = mouseX - container.left;
-    mouseY = mouseY - container.top;
+            // Bootstrap helper variables
+            var origin = this.activeHandle.originPoint.slice();
+            var originX = this.activeHandle.originX;
+            var originY = this.activeHandle.originY;
+            var handle = this.activeHandle.handle;
+            var TOP_MOVABLE = handle.constraints[0] === 1;
+            var RIGHT_MOVABLE = handle.constraints[1] === 1;
+            var BOTTOM_MOVABLE = handle.constraints[2] === 1;
+            var LEFT_MOVABLE = handle.constraints[3] === 1;
+            var MULTI_AXIS = (LEFT_MOVABLE || RIGHT_MOVABLE) && (TOP_MOVABLE || BOTTOM_MOVABLE);
 
-    this.currentMove = {
-        offsetX: mouseX - this.box.x1,
-        offsetY: mouseY - this.box.y1
-    };
-}
+            // Apply movement to respective sides according to the handle's
+            // constraint values.
+            var x1 = LEFT_MOVABLE || RIGHT_MOVABLE ? originX : this.box.x1;
+            var x2 = LEFT_MOVABLE || RIGHT_MOVABLE ? originX : this.box.x2;
+            var y1 = TOP_MOVABLE || BOTTOM_MOVABLE ? originY : this.box.y1;
+            var y2 = TOP_MOVABLE || BOTTOM_MOVABLE ? originY : this.box.y2;
+            x1 = LEFT_MOVABLE ? mouseX : x1;
+            x2 = RIGHT_MOVABLE ? mouseX : x2;
+            y1 = TOP_MOVABLE ? mouseY : y1;
+            y2 = BOTTOM_MOVABLE ? mouseY : y2;
 
-/**
- * Main logic to handle the movement of the crop region.
- */
-function regionMove(e) {
-    var _e$detail3 = e.detail,
-        mouseX = _e$detail3.mouseX,
-        mouseY = _e$detail3.mouseY;
-    var _currentMove = this.currentMove,
-        offsetX = _currentMove.offsetX,
-        offsetY = _currentMove.offsetY;
+            // Check if the user dragged past the origin point. If it did,
+            // we set the flipped flag to true.
+            var isFlippedX = false,
+                isFlippedY = false;
 
-    // Calculate mouse's position in relative to the container
+            if (LEFT_MOVABLE || RIGHT_MOVABLE) {
+                isFlippedX = LEFT_MOVABLE ? mouseX > originX : mouseX < originX;
+            }
+            if (TOP_MOVABLE || BOTTOM_MOVABLE) {
+                isFlippedY = TOP_MOVABLE ? mouseY > originY : mouseY < originY;
+            }
 
-    var container = this.cropperEl.getBoundingClientRect();
-    mouseX = mouseX - container.left;
-    mouseY = mouseY - container.top;
+            // If it is flipped, we swap the coordinates and flip the origin point.
+            if (isFlippedX) {
+                var tmp = x1;x1 = x2;x2 = tmp; // Swap x1 and x2
+                origin[0] = 1 - origin[0]; // Flip origin x point
+            }
+            if (isFlippedY) {
+                var _tmp = y1;y1 = y2;y2 = _tmp; // Swap y1 and y2
+                origin[1] = 1 - origin[1]; // Flip origin y point
+            }
 
-    this.box.move(mouseX - offsetX, mouseY - offsetY);
+            // Create new box object
+            var box = new Box(x1, y1, x2, y2);
 
-    // Ensure box is within the boundaries
-    if (this.box.x1 < 0) {
-        this.box.move(0, null);
-    }
-    if (this.box.x2 > container.width) {
-        this.box.move(container.width - this.box.width(), null);
-    }
-    if (this.box.y1 < 0) {
-        this.box.move(null, 0);
-    }
-    if (this.box.y2 > container.height) {
-        this.box.move(null, container.height - this.box.height());
-    }
+            // Maintain aspect ratio
+            if (this.options.aspectRatio) {
+                var ratio = this.options.aspectRatio;
+                var isVerticalMovement = false;
+                if (MULTI_AXIS) {
+                    isVerticalMovement = mouseY > box.y1 + ratio * box.width() || mouseY < box.y2 - ratio * box.width();
+                } else if (TOP_MOVABLE || BOTTOM_MOVABLE) {
+                    isVerticalMovement = true;
+                }
+                var ratioMode = isVerticalMovement ? 'width' : 'height';
+                box.constrainToRatio(ratio, origin, ratioMode);
+            }
 
-    this.redraw(this.box);
+            // Maintain minimum/maximum size
+            var min = this.options.minSize;
+            var max = this.options.maxSize;
+            box.constrainToSize(max.width, max.height, min.width, min.height, origin);
 
-    // Call the callback
-    this.options.onUpdate(this.getValue());
-}
+            // Constrain to boundary
+            var parentWidth = this.cropperEl.offsetWidth;
+            var parentHeight = this.cropperEl.offsetHeight;
+            box.constrainToBoundary(parentWidth, parentHeight, origin);
 
-/**
- * HELPER FUNCTIONS
- */
+            // Finally, update the visuals (border, handles, clipped image, etc)
+            this.box = box;
+            this.redraw(this.box);
+
+            // Call the callback
+            if (this.options.onUpdate !== null && typeof this.options.onUpdate === 'function') {
+                this.options.onUpdate(this.getValue());
+            }
+        }
+
+        /**
+         * EVENT HANDLER
+         * Executes when user starts moving the crop region.
+         */
+
+    }, {
+        key: 'onRegionMoveStart',
+        value: function onRegionMoveStart(e) {
+            var _e$detail2 = e.detail,
+                mouseX = _e$detail2.mouseX,
+                mouseY = _e$detail2.mouseY;
+
+            // Calculate mouse's position in relative to the container
+
+            var container = this.cropperEl.getBoundingClientRect();
+            mouseX = mouseX - container.left;
+            mouseY = mouseY - container.top;
+
+            this.currentMove = {
+                offsetX: mouseX - this.box.x1,
+                offsetY: mouseY - this.box.y1
+            };
+        }
+
+        /**
+         * EVENT HANDLER
+         * Executes when user moves the crop region.
+         */
+
+    }, {
+        key: 'onRegionMoveMoving',
+        value: function onRegionMoveMoving(e) {
+            var _e$detail3 = e.detail,
+                mouseX = _e$detail3.mouseX,
+                mouseY = _e$detail3.mouseY;
+            var _currentMove = this.currentMove,
+                offsetX = _currentMove.offsetX,
+                offsetY = _currentMove.offsetY;
+
+            // Calculate mouse's position in relative to the container
+
+            var container = this.cropperEl.getBoundingClientRect();
+            mouseX = mouseX - container.left;
+            mouseY = mouseY - container.top;
+
+            this.box.move(mouseX - offsetX, mouseY - offsetY);
+
+            // Ensure box is within the boundaries
+            if (this.box.x1 < 0) {
+                this.box.move(0, null);
+            }
+            if (this.box.x2 > container.width) {
+                this.box.move(container.width - this.box.width(), null);
+            }
+            if (this.box.y1 < 0) {
+                this.box.move(null, 0);
+            }
+            if (this.box.y2 > container.height) {
+                this.box.move(null, container.height - this.box.height());
+            }
+
+            // Update visuals
+            this.redraw(this.box);
+
+            // Call the callback
+            if (this.options.onUpdate !== null && typeof this.options.onUpdate === 'function') {
+                this.options.onUpdate(this.getValue());
+            }
+        }
+
+        /**
+         * Calculate the value of the crop region.
+         */
+
+    }, {
+        key: 'getValue',
+        value: function getValue() {
+            var mode = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+
+            if (mode === null) {
+                mode = this.options.returnMode;
+            }
+            if (mode == 'real') {
+                var actualWidth = this.imageEl.naturalWidth;
+                var actualHeight = this.imageEl.naturalHeight;
+                var factorX = actualWidth / this.imageEl.offsetWidth;
+                var factorY = actualHeight / this.imageEl.offsetHeight;
+                return {
+                    x: Math.round(this.box.x1 * factorX),
+                    y: Math.round(this.box.y1 * factorY),
+                    width: Math.round(this.box.width() * factorX),
+                    height: Math.round(this.box.height() * factorY)
+                };
+            } else if (mode == 'ratio') {
+                var elementWidth = this.imageEl.offsetWidth;
+                var elementHeight = this.imageEl.offsetHeight;
+                return {
+                    x: round(this.box.x1 / elementWidth, 3),
+                    y: round(this.box.y1 / elementHeight, 3),
+                    width: round(this.box.width() / elementWidth, 3),
+                    height: round(this.box.height() / elementHeight, 3)
+                };
+            } else if (mode == 'raw') {
+                return {
+                    x: Math.round(this.box.x1),
+                    y: Math.round(this.box.y1),
+                    width: Math.round(this.box.width()),
+                    height: Math.round(this.box.height())
+                };
+            }
+        }
+
+        /**
+         * Parse user options and set default values.
+         */
+
+    }], [{
+        key: 'parseOptions',
+        value: function parseOptions(opts) {
+            var defaults$$1 = {
+                aspectRatio: null,
+                maxSize: { width: null, height: null },
+                minSize: { width: null, height: null },
+                startSize: { width: 100, height: 100, unit: '%' },
+                returnMode: 'real',
+                onInitialize: null,
+                onUpdate: null
+            };
+
+            // Parse aspect ratio
+            var aspectRatio = null;
+            if (opts.aspectRatio !== undefined) {
+                if (typeof opts.aspectRatio === 'number') {
+                    aspectRatio = opts.aspectRatio;
+                } else if (opts.aspectRatio instanceof Array) {
+                    aspectRatio = opts.aspectRatio[1] / opts.aspectRatio[0];
+                }
+            }
+
+            // Parse max width/height
+            var maxSize = null;
+            if (opts.maxSize !== undefined && opts.maxSize !== null) {
+                maxSize = {
+                    width: opts.maxSize[0] || null,
+                    height: opts.maxSize[1] || null,
+                    unit: opts.maxSize[2] || 'px'
+                };
+            }
+
+            // Parse min width/height
+            var minSize = null;
+            if (opts.minSize !== undefined && opts.minSize !== null) {
+                minSize = {
+                    width: opts.minSize[0] || null,
+                    height: opts.minSize[1] || null,
+                    unit: opts.minSize[2] || 'px'
+                };
+            }
+
+            // Parse start size
+            var startSize = null;
+            if (opts.startSize !== undefined && opts.startSize !== null) {
+                startSize = {
+                    width: opts.startSize[0] || null,
+                    height: opts.startSize[1] || null,
+                    unit: opts.startSize[2] || '%'
+                };
+            }
+
+            // Parse onUpdate callback
+            var onUpdate = null;
+            if (typeof opts.onUpdate === 'function') {
+                onUpdate = opts.onUpdate;
+            }
+
+            // Parse onInitialize callback
+            var onInitialize = null;
+            if (typeof opts.onInitialize === 'function') {
+                onInitialize = opts.onInitialize;
+            }
+
+            // Parse returnMode value
+            var returnMode = null;
+            if (opts.returnMode !== undefined) {
+                var s = opts.returnMode.toLowerCase();
+                if (['real', 'ratio', 'raw'].indexOf(s) === -1) {
+                    throw "Invalid return mode.";
+                }
+                returnMode = s;
+            }
+
+            // Create function to convert % values to pixels
+            var convertToPixels = function convertToPixels(container) {
+                var width = container.offsetWidth;
+                var height = container.offsetHeight;
+
+                // Convert sizes
+                var sizeKeys = ['maxSize', 'minSize', 'startSize'];
+                for (var i = 0; i < sizeKeys.length; i++) {
+                    var key = sizeKeys[i];
+                    if (this[key] !== null) {
+                        if (this[key].unit == '%') {
+                            if (this[key].width !== null) {
+                                this[key].width = this[key].width / 100 * width;
+                            }
+                            if (this[key].height !== null) {
+                                this[key].height = this[key].height / 100 * height;
+                            }
+                        }
+                        delete this[key].unit;
+                    }
+                }
+            };
+
+            var defaultValue = function defaultValue(v, d) {
+                return v !== null ? v : d;
+            };
+            return {
+                aspectRatio: defaultValue(aspectRatio, defaults$$1.aspectRatio),
+                maxSize: defaultValue(maxSize, defaults$$1.maxSize),
+                minSize: defaultValue(minSize, defaults$$1.minSize),
+                startSize: defaultValue(startSize, defaults$$1.startSize),
+                returnMode: defaultValue(returnMode, defaults$$1.returnMode),
+                onUpdate: defaultValue(onUpdate, defaults$$1.onUpdate),
+                onInitialize: defaultValue(onInitialize, defaults$$1.onInitialize),
+                convertToPixels: convertToPixels
+            };
+        }
+    }]);
+    return CropprCore;
+}();
 
 function round(value, decimals) {
     return Number(Math.round(value + 'e' + decimals) + 'e-' + decimals);
 }
+
+/**
+ * Croppr.js
+ * https://github.com/jamesssooi/Croppr.js
+ * 
+ * A JavaScript image cropper that's lightweight, awesome, and has
+ * zero dependencies.
+ * 
+ * (C) 2017 James Ooi. Released under the MIT License.
+ */
+
+/**
+ * This class is a wrapper for CropprCore that merely implements the main
+ * interfaces for the Croppr instance. Look into CropprCore for all the
+ * main logic.
+ */
+
+var Croppr$1 = function (_CropprCore) {
+  inherits(Croppr, _CropprCore);
+
+  /**
+   * @constructor
+   * Calls the CropprCore's constructor.
+   */
+  function Croppr(element, options) {
+    var _deferred = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+
+    classCallCheck(this, Croppr);
+    return possibleConstructorReturn(this, (Croppr.__proto__ || Object.getPrototypeOf(Croppr)).call(this, element, options, _deferred));
+  }
+
+  /**
+   * Gets the value of the crop region.
+   * @param {String} mode Which mode of calculation to use: 'real', 'ratio' or
+   *      'raw'.
+   */
+
+
+  createClass(Croppr, [{
+    key: 'getValue',
+    value: function getValue(mode) {
+      return get(Croppr.prototype.__proto__ || Object.getPrototypeOf(Croppr.prototype), 'getValue', this).call(this, mode);
+    }
+
+    /**
+     * Moves the crop region to a specified coordinate.
+     * @param {Number} x
+     * @param {Number} y
+     */
+
+  }, {
+    key: 'moveTo',
+    value: function moveTo(x, y) {
+      this.box.move(x, y);
+      this.redraw();
+      return this;
+    }
+
+    /**
+     * Resizes the crop region to a specified width and height.
+     * @param {Number} width
+     * @param {Number} height
+     * @param {Array} origin The origin point to resize from.
+     *      Defaults to [0.5, 0.5] (center).
+     */
+
+  }, {
+    key: 'resizeTo',
+    value: function resizeTo(width, height) {
+      var origin = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [.5, .5];
+
+      this.box.resize(width, height, origin);
+      this.redraw();
+      return this;
+    }
+
+    /**
+     * Scale the crop region by a factor.
+     * @param {Number} factor
+     * @param {Array} origin The origin point to resize from.
+     *      Defaults to [0.5, 0.5] (center).
+     */
+
+  }, {
+    key: 'scaleBy',
+    value: function scaleBy(factor) {
+      var origin = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [.5, .5];
+
+      this.box.scale(factor, origin);
+      this.redraw();
+      return this;
+    }
+
+    /**
+     * Resets the crop region to the initial settings.
+     */
+
+  }, {
+    key: 'reset',
+    value: function reset() {
+      this.box = this.initializeBox(this.options);
+      this.redraw();
+      return this;
+    }
+  }]);
+  return Croppr;
+}(CropprCore);
 
 return Croppr$1;
 

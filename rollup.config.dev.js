@@ -13,7 +13,7 @@ var banner = `/**
 `
 
 export default {
-  entry: 'src/main.js',
+  entry: 'src/index.js',
   plugins: [ json(), babel() ],
   format: 'umd',
   moduleName: 'Croppr',
