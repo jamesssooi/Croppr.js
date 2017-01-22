@@ -1,7 +1,7 @@
+'use strict';
 /**
  * Croppr.js unit tests
  */
-"use strict";
 
 var jsdom = require('mocha-jsdom');
 var fs = require('fs');
