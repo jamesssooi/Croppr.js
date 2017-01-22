@@ -25,17 +25,18 @@ jsdom({
     }
 });
 
+describe('Croppr constructor', function() {
+    it('should be a function', function() {
+      assert.equal(typeof Croppr, 'function');
+    });
+});
+
 describe('Croppr', function() {
     beforeEach('setup fake dom', function() {
         document.body.innerHTML = '<img src="mock.jpg" id="croppr" width="500" height="500">'
     });
 
     describe('Croppr instantiation', function() {
-
-        it('constructor should be a function', function() {
-            assert.equal(typeof Croppr, 'function');
-        });
-
         it('should work by passing a query selector', function() {
             assert.doesNotThrow(function() {
                 new Croppr('#croppr', {});
@@ -108,7 +109,7 @@ describe('Croppr behaviour', function() {
         document.body.innerHTML = '<img src="mock.jpg" id="croppr" width="500" height="500">'
     });
 
-    describe('Respect to options', function() {
+    describe('Respect to constraints', function() {
         var instance = null;
         before('setup instance and simulate movement', function() {
             instance = createMockCroppr({
@@ -122,12 +123,12 @@ describe('Croppr behaviour', function() {
             instance.reset();
         })
 
-        it('should respect aspect ratio on resize', function() {
+        it('should respect aspect ratio on mouse move', function() {
             // Bottom right handle
             const handle = {constraints: [0, 1, 1, 0], position: [1, 1]}
 
             // Move up by 50 pixels
-            simulateHandleMove(instance, handle, 500, 450);
+            simulateMove(instance, handle, 500, 450);
 
             // Assert values
             let boxRatio = instance.box.height()/instance.box.width();
@@ -136,30 +137,30 @@ describe('Croppr behaviour', function() {
             assert.equal(boxRatio, 1.5.toFixed(2));
         });
 
-        it('should respect the maximum size on resize', function() {
+        it('should respect the maximum size', function() {
             // Bottom right handle
             const handle = {constraints: [0, 1, 1, 0], position: [1, 1]}
 
             // Drag handle to bottom right
-            simulateHandleMove(instance, handle, 500, 500);
+            simulateMove(instance, handle, 500, 500);
 
             assert.isTrue(instance.box.width() <= 300);
             assert.isTrue(instance.box.height() <= 300);
         });
 
-        it('should respect the minimum size on resize', function() {
+        it('should respect the minimum size', function() {
             // Bottom right handle
-            const handle = {constraints: [0, 1, 1, 0], position: [1, 1]};
+            const handle = {constraints: [0, 1, 1, 0], position: [1, 1]}
 
             const x1 = instance.box.x1,
                   y1 = instance.box.y1;
 
             // Drag handle to upper left
-            simulateHandleMove(instance, handle, x1 + 10, y1 + 10);
+            simulateMove(instance, handle, x1 + 10, y1 + 10);
 
             assert.isTrue(instance.box.width() >= 50);
             assert.isTrue(instance.box.height() >= 50);
-        });
+        })
     });
 
     describe('Handle behaviour', function() {
@@ -171,81 +172,9 @@ describe('Croppr behaviour', function() {
         afterEach('reset box', function() {
             instance.reset();
         });
-
-        it('should resize box element', function() {
-            // Bottom right handle
-            const handle = {constraints: [0, 1, 1, 0], position: [1, 1]};
-
-            const x2 = instance.box.x2,
-                  y2 = instance.box.y2;
-
-            // Drag handle by -50px, -50px
-            simulateHandleMove(instance, handle, x2 - 50, y2 - 50);
-
-            assert.equal(instance.box.x2, x2 - 50);
-            assert.equal(instance.box.y2, y2 - 50);
-        });
-
-        it('should work when handle is flipped', function() {
-            // Right and left handles
-            const handleR = {constraints: [0, 1, 0, 0], position: [1, 0.5]};
-            const handleL = {constraints: [0, 0, 0, 1], position: [0, 0.5]};
-
-            // Drag right handle to center then left handle to right boundary
-            simulateHandleMove(instance, handleR, 250, 250);
-            simulateHandleMove(instance, handleL, 500, 250);
-
-            assert.isTrue(instance.box.x2 > instance.box.x1);
-            assert.isTrue(instance.box.y2 > instance.box.y1);
-        });
-
-        it('should constrain within the boundaries', function() {
-            // Right handle
-            const handle = {constraints: [0, 1, 1, 0], position: [1, 1]};
-
-            // Drag handle beyond boundaries
-            const x2 = instance.cropperEl.offsetWidth + 100;
-            const y2 = instance.cropperEl.offsetHeight + 100;
-            simulateHandleMove(instance, handle, x2, y2);
-
-            assert.isTrue(instance.box.x2 <= instance.cropperEl.offsetWidth);
-            assert.isTrue(instance.box.y2 <= instance.cropperEl.offsetHeight);
-        });
-    });
-
-    describe('Moving behaviour', function() {
-        var instance = null;
-        before('setup instance and simulate movement', function() {
-            instance = createMockCroppr({});
-        });
-
-        afterEach('reset box', function() {
-            instance.reset();
-        });
-
-        it('should move box element', function() {
-            instance.resizeTo(250, 250);
-            instance.moveTo(0, 0);
-            simulateRegionMove(instance, 0, 0, 250, 250);
-
-            assert.equal(instance.box.x1, 250);
-            assert.equal(instance.box.y1, 250);
-            assert.equal(instance.box.x2, 500);
-            assert.equal(instance.box.y2, 500);
-        });
-
-        it('should constrain within the boundary', function() {
-            instance.resizeTo(250, 250);
-            instance.moveTo(0, 0);
-            simulateRegionMove(instance, 0, 0, 500, 500);
-
-            assert.equal(instance.box.x1, 250);
-            assert.equal(instance.box.y1, 250);
-            assert.equal(instance.box.x2, 500);
-            assert.equal(instance.box.y2, 500);
-        });
     })
 });
+
 
 /**
  * Helper functions
@@ -268,7 +197,7 @@ function createMockCroppr(options) {
             offsetWidth: 500,
             offsetHeight: 500,
             getBoundingClientRect: function() {
-                return {left: 0, top: 0, width: 500, height: 500}
+                return {left: 0, top: 0}
             }
         }
 
@@ -285,7 +214,7 @@ function createMockCroppr(options) {
     return instance;
 }
 
-function simulateHandleMove(instance, handle, mouseX, mouseY) {
+function simulateMove(instance, handle, mouseX, mouseY) {
     // Set active handle
     const originPoint = [1 - handle.position[0], 1 - handle.position[1]];
     let originX = instance.box.getAbsolutePoint(originPoint)[0];
@@ -295,19 +224,5 @@ function simulateHandleMove(instance, handle, mouseX, mouseY) {
     // Simulate movement
     instance.onHandleMoveMoving({
         detail: {mouseX: mouseX, mouseY: mouseY}
-    });
-}
-
-function simulateRegionMove(instance, originX, originY, toX, toY) {
-    // Set current move
-    let container = instance.cropperEl.getBoundingClientRect();
-    instance.currentMove = {
-        offsetX: originX - instance.box.x1,
-        offsetY: originY - instance.box.y1
-    }
-
-    // Simulate movement
-    instance.onRegionMoveMoving({
-        detail: {mouseX: toX, mouseY: toY}
     });
 }
