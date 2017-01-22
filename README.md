@@ -1,5 +1,4 @@
-# Croppr.js
-[![Build Status](https://travis-ci.org/jamesssooi/Croppr.js.svg?branch=master)](https://travis-ci.org/jamesssooi/Croppr.js)
+# Croppr.js [![Build Status](https://travis-ci.org/jamesssooi/Croppr.js.svg?branch=master)](https://travis-ci.org/jamesssooi/Croppr.js)
 
 A JavaScript image cropper that's lightweight, awesome, and has absolutely zero dependencies.
 
