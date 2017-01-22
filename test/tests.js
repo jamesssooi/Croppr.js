@@ -244,13 +244,46 @@ describe('Croppr behaviour', function() {
             assert.equal(instance.box.x2, 500);
             assert.equal(instance.box.y2, 500);
         });
-    })
+    });
+
+    describe('Callback behaviour', function() {
+        it('should call the onInitialize callback', function() {
+            let instance = createMockCroppr({
+                onInitialize: function() { return; }
+            }, true);
+            let spy = sinon.spy(instance.options, 'onInitialize');
+            instance.initialize();
+            assert.isTrue(spy.calledOnce);
+        });
+
+        it('should call the onUpdate callback', function() {
+            let instance = createMockCroppr({
+                onUpdate: function() { return; }
+            });
+            let spy = sinon.spy(instance.options, 'onUpdate');
+            
+            // Simulate handle resize
+            const handle = {constraints: [0, 1, 1, 0], position: [1, 1]};
+            simulateHandleMove(instance, handle, 250, 250);
+
+            // Simulate region move
+            simulateRegionMove(instance, 0, 0, 250, 250);
+
+            // Simulate API methods
+            instance.moveTo(0, 0);
+            instance.resizeTo(50, 50);
+            instance.scaleBy(2, [0, 0]);
+
+            assert.equal(spy.callCount, 5);
+        });
+    });
 });
 
 /**
  * Helper functions
  */
-function createMockCroppr(options) {
+function createMockCroppr(options, _deferred) {
+    _deferred = _deferred || false;
     let instance = new Croppr('#croppr', options, true);
     sinon.stub(instance, 'createDOM', function() {
         // Mock containerEl & eventBus
@@ -281,7 +314,10 @@ function createMockCroppr(options) {
         // Mock handles
         this.handles = [];
     });
-    instance.initialize();
+
+    if (!_deferred) {
+        instance.initialize();
+    }
     return instance;
 }
 
