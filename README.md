@@ -3,7 +3,8 @@
 ### A JavaScript image cropper that's lightweight, awesome, and has absolutely zero dependencies.
 
 * Simple
-* Lightweight (4kb minified and gzipped)
+* Lightweight (<5kb minified and gzipped)
+* Made only with vanilla JS
 * Zero dependencies
 
 Try it out in the demo →
@@ -29,8 +30,8 @@ _Note: Don't forget to bundle or include croppr.css!_
 **Via script tag:**
 
 ```html
-<script src="path/to/croppr.js"></script>
 <link src="path/to/croppr.css" rel="stylesheet"/>
+<script src="path/to/croppr.js"></script>
 ```
 
 
