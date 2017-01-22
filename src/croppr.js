@@ -41,6 +41,11 @@ export default class Croppr extends CropprCore {
     moveTo(x, y) {
         this.box.move(x, y);
         this.redraw();
+        
+        // Call the callback
+        if (this.options.onUpdate !== null) {
+            this.options.onUpdate(this.getValue());
+        }
         return this;
     }
 
@@ -54,6 +59,11 @@ export default class Croppr extends CropprCore {
     resizeTo(width, height, origin=[.5, .5]) {
         this.box.resize(width, height, origin);
         this.redraw();
+
+        // Call the callback
+        if (this.options.onUpdate !== null) {
+            this.options.onUpdate(this.getValue());
+        }
         return this;
     }
 
@@ -66,6 +76,11 @@ export default class Croppr extends CropprCore {
     scaleBy(factor, origin=[.5, .5]) {
         this.box.scale(factor, origin);
         this.redraw();
+
+        // Call the callback
+        if (this.options.onUpdate !== null) {
+            this.options.onUpdate(this.getValue());
+        }
         return this;
     }
 
@@ -75,6 +90,11 @@ export default class Croppr extends CropprCore {
     reset() {
         this.box = this.initializeBox(this.options);
         this.redraw();
+
+        // Call the callback
+        if (this.options.onUpdate !== null) {
+            this.options.onUpdate(this.getValue());
+        }
         return this;
     }
 }

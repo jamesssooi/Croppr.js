@@ -79,8 +79,7 @@ export default class CropprCore {
 
         // Set the initalized flag to true and call the callback
         this._initialized = true;
-        if (this.options.onInitialized !== 'undefined' &&
-            typeof this.options.onInitialize === 'function') {
+        if (this.options.onInitialize !== null) {
             this.options.onInitialize(this);
         }
     }
@@ -365,8 +364,7 @@ export default class CropprCore {
         this.redraw(this.box);
 
         // Call the callback
-        if (this.options.onUpdate !== null &&
-            typeof this.options.onUpdate === 'function') {
+        if (this.options.onUpdate !== null) {
             this.options.onUpdate(this.getValue());
         }
     }
@@ -422,8 +420,7 @@ export default class CropprCore {
         this.redraw(this.box);
 
         // Call the callback
-        if (this.options.onUpdate !== null &&
-            typeof this.options.onUpdate === 'function') {
+        if (this.options.onUpdate !== null) {
             this.options.onUpdate(this.getValue());
         }
     }
@@ -519,13 +516,13 @@ export default class CropprCore {
 
         // Parse onUpdate callback
         let onUpdate = null;
-        if (typeof(opts.onUpdate) === 'function') {
+        if (typeof opts.onUpdate === 'function') {
             onUpdate = opts.onUpdate;
         }
 
         // Parse onInitialize callback
         let onInitialize = null;
-        if (typeof(opts.onInitialize) === 'function') {
+        if (typeof opts.onInitialize === 'function') {
             onInitialize = opts.onInitialize;
         }
 

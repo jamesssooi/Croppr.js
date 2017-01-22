@@ -77,6 +77,7 @@ export default class Box {
         const newWidth = this.width() * factor;
         const newHeight = this.height() * factor;
         this.resize(newWidth, newHeight, origin);
+        return this;
     }
 
     /**

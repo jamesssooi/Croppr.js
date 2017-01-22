@@ -321,6 +321,7 @@ var Box = function () {
             var newWidth = this.width() * factor;
             var newHeight = this.height() * factor;
             this.resize(newWidth, newHeight, origin);
+            return this;
         }
 
         /**
@@ -605,7 +606,7 @@ var CropprCore = function () {
 
             // Set the initalized flag to true and call the callback
             this._initialized = true;
-            if (this.options.onInitialized !== 'undefined' && typeof this.options.onInitialize === 'function') {
+            if (this.options.onInitialize !== null) {
                 this.options.onInitialize(this);
             }
         }
@@ -922,7 +923,7 @@ var CropprCore = function () {
             this.redraw(this.box);
 
             // Call the callback
-            if (this.options.onUpdate !== null && typeof this.options.onUpdate === 'function') {
+            if (this.options.onUpdate !== null) {
                 this.options.onUpdate(this.getValue());
             }
         }
@@ -992,7 +993,7 @@ var CropprCore = function () {
             this.redraw(this.box);
 
             // Call the callback
-            if (this.options.onUpdate !== null && typeof this.options.onUpdate === 'function') {
+            if (this.options.onUpdate !== null) {
                 this.options.onUpdate(this.getValue());
             }
         }
@@ -1180,94 +1181,114 @@ function round(value, decimals) {
  */
 
 var Croppr$1 = function (_CropprCore) {
-  inherits(Croppr, _CropprCore);
+    inherits(Croppr, _CropprCore);
 
-  /**
-   * @constructor
-   * Calls the CropprCore's constructor.
-   */
-  function Croppr(element, options) {
-    var _deferred = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+    /**
+     * @constructor
+     * Calls the CropprCore's constructor.
+     */
+    function Croppr(element, options) {
+        var _deferred = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
 
-    classCallCheck(this, Croppr);
-    return possibleConstructorReturn(this, (Croppr.__proto__ || Object.getPrototypeOf(Croppr)).call(this, element, options, _deferred));
-  }
-
-  /**
-   * Gets the value of the crop region.
-   * @param {String} mode Which mode of calculation to use: 'real', 'ratio' or
-   *      'raw'.
-   */
-
-
-  createClass(Croppr, [{
-    key: 'getValue',
-    value: function getValue(mode) {
-      return get(Croppr.prototype.__proto__ || Object.getPrototypeOf(Croppr.prototype), 'getValue', this).call(this, mode);
+        classCallCheck(this, Croppr);
+        return possibleConstructorReturn(this, (Croppr.__proto__ || Object.getPrototypeOf(Croppr)).call(this, element, options, _deferred));
     }
 
     /**
-     * Moves the crop region to a specified coordinate.
-     * @param {Number} x
-     * @param {Number} y
+     * Gets the value of the crop region.
+     * @param {String} mode Which mode of calculation to use: 'real', 'ratio' or
+     *      'raw'.
      */
 
-  }, {
-    key: 'moveTo',
-    value: function moveTo(x, y) {
-      this.box.move(x, y);
-      this.redraw();
-      return this;
-    }
 
-    /**
-     * Resizes the crop region to a specified width and height.
-     * @param {Number} width
-     * @param {Number} height
-     * @param {Array} origin The origin point to resize from.
-     *      Defaults to [0.5, 0.5] (center).
-     */
+    createClass(Croppr, [{
+        key: 'getValue',
+        value: function getValue(mode) {
+            return get(Croppr.prototype.__proto__ || Object.getPrototypeOf(Croppr.prototype), 'getValue', this).call(this, mode);
+        }
 
-  }, {
-    key: 'resizeTo',
-    value: function resizeTo(width, height) {
-      var origin = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [.5, .5];
+        /**
+         * Moves the crop region to a specified coordinate.
+         * @param {Number} x
+         * @param {Number} y
+         */
 
-      this.box.resize(width, height, origin);
-      this.redraw();
-      return this;
-    }
+    }, {
+        key: 'moveTo',
+        value: function moveTo(x, y) {
+            this.box.move(x, y);
+            this.redraw();
 
-    /**
-     * Scale the crop region by a factor.
-     * @param {Number} factor
-     * @param {Array} origin The origin point to resize from.
-     *      Defaults to [0.5, 0.5] (center).
-     */
+            // Call the callback
+            if (this.options.onUpdate !== null) {
+                this.options.onUpdate(this.getValue());
+            }
+            return this;
+        }
 
-  }, {
-    key: 'scaleBy',
-    value: function scaleBy(factor) {
-      var origin = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [.5, .5];
+        /**
+         * Resizes the crop region to a specified width and height.
+         * @param {Number} width
+         * @param {Number} height
+         * @param {Array} origin The origin point to resize from.
+         *      Defaults to [0.5, 0.5] (center).
+         */
 
-      this.box.scale(factor, origin);
-      this.redraw();
-      return this;
-    }
+    }, {
+        key: 'resizeTo',
+        value: function resizeTo(width, height) {
+            var origin = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [.5, .5];
 
-    /**
-     * Resets the crop region to the initial settings.
-     */
+            this.box.resize(width, height, origin);
+            this.redraw();
 
-  }, {
-    key: 'reset',
-    value: function reset() {
-      this.box = this.initializeBox(this.options);
-      this.redraw();
-      return this;
-    }
-  }]);
-  return Croppr;
+            // Call the callback
+            if (this.options.onUpdate !== null) {
+                this.options.onUpdate(this.getValue());
+            }
+            return this;
+        }
+
+        /**
+         * Scale the crop region by a factor.
+         * @param {Number} factor
+         * @param {Array} origin The origin point to resize from.
+         *      Defaults to [0.5, 0.5] (center).
+         */
+
+    }, {
+        key: 'scaleBy',
+        value: function scaleBy(factor) {
+            var origin = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [.5, .5];
+
+            this.box.scale(factor, origin);
+            this.redraw();
+
+            // Call the callback
+            if (this.options.onUpdate !== null) {
+                this.options.onUpdate(this.getValue());
+            }
+            return this;
+        }
+
+        /**
+         * Resets the crop region to the initial settings.
+         */
+
+    }, {
+        key: 'reset',
+        value: function reset() {
+            this.box = this.initializeBox(this.options);
+            this.redraw();
+
+            // Call the callback
+            if (this.options.onUpdate !== null) {
+                this.options.onUpdate(this.getValue());
+            }
+            return this;
+        }
+    }]);
+    return Croppr;
 }(CropprCore);
 
 return Croppr$1;
