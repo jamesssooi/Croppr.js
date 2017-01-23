@@ -123,6 +123,18 @@ onUpdate: function(data) {
 }
 ```
 
+#### onInitialize
+
+A callback function that is called when the Croppr instance is fully initialized.
+
+* Type: `Function`
+* Arguments: The Croppr instance
+* Example:
+```javascript
+onInitialize: function(instance) {
+  // do things here
+}
+```
 
 
 #### **returnMode**
