@@ -140,7 +140,7 @@ Define how the crop region should be calculated.
 
 ## Methods
 
-#### **getValue(_returnMode?: string_)**
+#### getValue(_returnMode?: string_)
 
 Returns the value of the crop region. `returnMode` inherits from options by default. Refer to [returnMode](#returnmode) for possible values.
 
@@ -151,6 +151,22 @@ var value = cropInstance.getValue();
 var ratio = cropInstance.getValue('ratio');
 // value = {x: 0.1, y: 0.3: width: 0.57, height: 0.57}
 ```
+
+#### moveTo(x: Number, y: Number)
+
+Moves the crop region to the specified coordinates. Returns the Croppr instance.
+
+#### resizeTo(width: Number, height: Number, _origin?: Array_)
+
+Resizes the crop region to the specified size. `origin` is an optional argument that specifies the origin point (in ratio) to resize from in the format of `[x, y]`. Defaults to `[0.5, 0.5]` (center). Returns the Croppr instance.
+
+#### scaleBy(factor: Number, _origin?: Array_)
+
+Scales the crop region by a factor. `origin` is an optional argument that specifies the origin point (in ratio) to resize from in the format of `[x, y]`. Defaults to `[0.5, 0.5]` (center). Returns the Croppr instance.
+
+#### reset()
+
+Resets the crop region to its original position and size. Returns the Croppr instance.
 
 Copyright © 2017 James Ooi.
 Released under the MIT License.
