@@ -1,10 +1,10 @@
 # Croppr.js [![Build Status](https://travis-ci.org/jamesssooi/Croppr.js.svg?branch=master)](https://travis-ci.org/jamesssooi/Croppr.js)
 
-### A JavaScript image cropper that's lightweight, awesome, and has absolutely zero dependencies.
+### A vanilla JavaScript image cropper that's lightweight, awesome, and has absolutely zero dependencies.
 
 * Simple
 * Lightweight (<5kb minified and gzipped)
-* Made only with vanilla JS
+* Made only with vanilla, native JS
 * Zero dependencies
 
 Try it out in the demo →
@@ -14,7 +14,7 @@ _Demo in progress_
 
 **Via NPM:**
 
-```
+```bash
 npm install croppr -—save
 ```
 
@@ -26,6 +26,12 @@ var Croppr = require('croppr');
 import Croppr from 'croppr';
 ```
 _Note: Don't forget to bundle or include croppr.css!_
+
+**Via Bower:**
+```bash
+bower install croppr
+```
+Then include via script tag below.
 
 **Via script tag:**
 

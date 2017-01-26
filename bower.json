@@ -1,0 +1,39 @@
+{
+  "name": "croppr",
+  "description": "A vanilla JavaScript image cropper that's lightweight, awesome, and has absolutely zero dependencies.",
+  "main": [
+    "dist/croppr.js",
+    "dist/croppr.css"
+  ],
+  "moduleType": [
+    "globals",
+    "amd",
+    "node"
+  ],
+  "authors": [
+    "James Ooi"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "cropper",
+    "crop",
+    "vanilla",
+    "js",
+    "image",
+    "croppr",
+    "lightweight",
+    "zero",
+    "dependencies"
+  ],
+  "homepage": "https://github.com/jamesssoi/Croppr.js",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test/",
+    "docs/",
+    "demo/",
+    "index.html",
+    "rollup.config.*"
+  ]
+}
