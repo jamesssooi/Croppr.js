@@ -1,7 +1,5 @@
 ![Croppr.js](https://raw.githubusercontent.com/jamesssooi/Croppr.js/gh-pages/assets/logo_gh.png)
 
-[![Build Status](https://travis-ci.org/jamesssooi/Croppr.js.svg?branch=master)](https://travis-ci.org/jamesssooi/Croppr.js)
-
 ### A vanilla JavaScript image cropper that's lightweight, awesome, and has absolutely zero dependencies.
 
 * Simple
@@ -187,6 +185,10 @@ Scales the crop region by a factor. `origin` is an optional argument that specif
 #### reset()
 
 Resets the crop region to its original position and size. Returns the Croppr instance.
+
+- - -
+
+[![Build Status](https://travis-ci.org/jamesssooi/Croppr.js.svg?branch=master)](https://travis-ci.org/jamesssooi/Croppr.js)
 
 Copyright © 2017 James Ooi.
 Released under the MIT License.
