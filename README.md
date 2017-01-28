@@ -2,9 +2,8 @@
 
 ### A vanilla JavaScript image cropper that's lightweight, awesome, and has absolutely zero dependencies.
 
-* Simple
 * Lightweight (<5kb minified and gzipped)
-* Made only with vanilla, native JS
+* Made only with native, delicious vanilla JS
 * Zero dependencies
 
 Try it out in the demo →
