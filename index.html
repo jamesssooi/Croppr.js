@@ -1,0 +1,18 @@
+<!doctype html>
+<html>
+<head>
+    <script src="dist/croppr.js"></script>
+    <link rel="stylesheet" href="dist/croppr.css">
+</head>
+
+<body>
+    <h1>Croppr.js</h1>
+    <img src="https://unsplash.it/500/500/?random" alt="" id="cropper">
+
+    <script>
+        var croppr = new Croppr('#cropper', {
+            onUpdate: function(data) { console.log(data); },
+        });
+    </script>
+</body>
+</html>

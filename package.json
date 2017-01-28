@@ -1,0 +1,23 @@
+{
+  "name": "croppr-gh-page",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jamesssooi/Croppr.js.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jamesssooi/Croppr.js/issues"
+  },
+  "homepage": "https://github.com/jamesssooi/Croppr.js#readme",
+  "dependencies": {
+    "node-sass": "^4.4.0",
+    "pug": "^2.0.0-beta9"
+  }
+}
