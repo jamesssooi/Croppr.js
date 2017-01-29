@@ -119,6 +119,9 @@ window.onload = function () {
     minInputs.map(function (el) {
         el.addEventListener('input', handleChange(croppr, 'minSize', minInputs));
     });
+
+    var value = croppr.getValue();
+    updateValue(value.x, value.y, value.width, value.height);
 };
 
 /** Functions */

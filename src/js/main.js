@@ -118,6 +118,9 @@ window.onload = function() {
     });
     minInputs.map(el => { el.addEventListener('input', handleChange(croppr, 'minSize', minInputs));
     });
+
+    const value = croppr.getValue();
+    updateValue(value.x, value.y, value.width, value.height);
 }
 
 
