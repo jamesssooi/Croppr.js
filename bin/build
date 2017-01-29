@@ -1,0 +1,3 @@
+node-sass --include-path scss src/scss/main.scss dist/style.css &&
+babel src/js/main.js -o dist/main.js &&
+pug src/pug --out ./

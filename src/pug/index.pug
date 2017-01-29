@@ -1,0 +1,123 @@
+<!doctype html>
+head
+  title Croppr.js - Lightweight vanilla JS image cropper
+
+  // Stylesheets
+  link(href="/dist/croppr.min.css" rel="stylesheet")
+  link(href="/dist/style.css" rel="stylesheet")
+  link(href="https://fonts.googleapis.com/css?family=Asap" rel="stylesheet")
+  link(href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet")
+
+  // Javascript
+  script(src="/dist/croppr.min.js")
+  script(src="/dist/main.js")
+
+  // Metadata
+  meta(name="viewport" content="width=device-width, initial-scale=1")
+  meta(name="description" content="A vanilla JavaScript image cropper that's lightweight, awesome, and has absolutely zero dependencies")
+  meta(name="title" content="Croppr.js - Lightweight vanilla JS image cropper")
+
+body
+  header.container
+    div.hero
+      div.hero__banner
+        img.hero__logo(src="/assets/logo.svg")
+        div.hero__title
+          h1.hero__heading Croppr.js
+          span.hero__subheading Lightweight, awesome, vanilla JS image cropper.
+          div.hero__buttons.block
+            a.button.is-primary
+             | Install
+             i.button__icon-right.fa.fa-download
+            | 
+            a.button.is-black(
+              href="https://github.com/jamesssooi/Croppr.js"
+              target="_blank"
+            )
+              | Github
+              i.button__icon-right.fa.fa-github-alt
+  
+  section.container
+    div.panel
+      div.panel__body
+        div.columns
+          div.feature-item.column
+            span.feature-item__icon
+              img(src="/assets/icons/feather.svg")
+            span.feature-item__heading Lightweight
+            span.feature-item__body Croppr is as light as a feather at less than 5kb minified and gzipped!
+          div.feature-item.column
+            span.feature-item__icon
+              img(src="/assets/icons/js.svg")
+            span.feature-item__heading Deliciously vanilla
+            span.feature-item__body Croppr is made only with 100% native, deliciously vanilla JavaScript
+          div.feature-item.column
+            span.feature-item__icon
+              img(src="/assets/icons/lego.svg")
+            span.feature-item__heading Zero dependencies
+            span.feature-item__body Croppr is a strong, independent JavaScript component who don't need no dependencies
+
+  section.container
+    div.panel
+      span.panel__heading Demo
+      div.panel__body
+        div.columns
+          div.column.is-7
+            div.cropper
+              img(src="https://unsplash.it/450/450" id="croppr")
+          div.column.is-5
+            div.selection-info
+              span.selection-info__title Selection value
+              span.selection-info__item(id="valX") <strong>x</strong>&nbsp;500
+              span.selection-info__item(id="valY") <strong>y</strong>&nbsp;500
+              span.selection-info__item(id="valW") <strong>width</strong>&nbsp;500
+              span.selection-info__item(id="valH") <strong>height</strong>&nbsp;500
+
+            div.option-item
+              div.option-item__label
+                label.label Aspect Ratio
+                label.checkbox
+                  | Enable
+                  input(type="checkbox" id="cb-ratio")
+              div.control.is-grouped
+                p.control.is-expanded.has-icon.has-icon-left
+                  input.input(type="text" id="input-ratio" disabled)
+                  span.icon.is-small A
+
+            div.option-item
+              div.option-item__label
+                label.label Maximum size
+                label.checkbox
+                  | Enable
+                  input(type="checkbox" id="max-checkbox")
+              div.control.is-grouped
+                p.control.is-expanded.has-icon.has-icon-left
+                  input.input(type="text" id="max-input-width" disabled)
+                  span.icon.is-small W
+                p.control.is-expanded.has-icon.has-icon-left
+                  input.input(type="text" id="max-input-height" disabled)
+                  span.icon.is-small H
+                p.control.is-expanded.has-icon.has-icon-left
+                  span.select.is-fullwidth
+                    select(id="max-input-unit" disabled)
+                      option %
+                      option px
+
+            div.option-item
+              div.option-item__label
+                label.label Minimum size
+                label.checkbox
+                  | Enable
+                  input(type="checkbox")
+              div.control.is-grouped
+                p.control.is-expanded.has-icon.has-icon-left
+                  input.input(type="text" disabled)
+                  span.icon.is-small W
+                p.control.is-expanded.has-icon.has-icon-left
+                  input.input(type="text" disabled)
+                  span.icon.is-small H
+                p.control.is-expanded.has-icon.has-icon-left
+                  span.select.is-fullwidth
+                    select(disabled)
+                      option %
+                      option px

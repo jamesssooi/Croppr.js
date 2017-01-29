@@ -1,0 +1,28 @@
+// web/components/_features.scss
+
+.feature-item {
+
+    
+}
+
+.feature-item__icon {
+    width: 42px;
+    height: 42px;
+    display: block;
+    margin-bottom: 12px;
+
+    & img {
+        width: 42px;
+        height: 42px;
+    }
+}
+
+.feature-item__heading {
+    font-weight: bold;
+    display: block;
+    //color: rgb(120, 120, 120);
+}
+
+.feature-item__body {
+    color: rgb(120, 120, 120);
+}

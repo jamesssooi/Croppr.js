@@ -1,0 +1,3 @@
+nodemon -e scss -w "src/scss" -x "node-sass --include-path scss src/scss/main.scss dist/style.css" &
+babel src/js/main.js --watch -o dist/main.js &
+pug --pretty -w src/pug --out ./

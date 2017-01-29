@@ -1,0 +1,41 @@
+// components/_demo.scss
+
+.option-item {
+    margin-bottom: 24px;
+}
+
+.option-item__label {
+    display: flex;
+    margin-bottom: 12px;
+}
+
+.option-item__label .label {
+    margin-bottom: 0;
+}
+
+.option-item__label .checkbox {
+    margin-left: auto;
+}
+
+.option-item__label [type="checkbox"] {
+    margin-right: 0;
+    margin-left: 6px;
+}
+
+// Selection info
+.selection-info {
+    background-color: rgb(230, 230, 230);
+    padding: 18px;
+    margin-bottom: 24px;
+}
+
+.selection-info__title {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 6px;
+}
+
+.selection-info__item {
+    margin-right: 12px;
+    display: inline-block;
+}

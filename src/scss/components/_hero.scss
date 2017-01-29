@@ -1,0 +1,30 @@
+// components/_hero.scss
+
+.hero {
+    padding: 30px 0px;
+    background-color: inherit;
+}
+
+.hero__banner {
+    display: flex;
+    //border-bottom: 1px solid $color-border-grey;
+}
+
+.hero__logo {
+    height: 240px;
+}
+
+.hero__title {
+    align-self: center;
+}
+
+.hero__heading {
+    font-size: 32px;
+    font-weight: bold;
+    align-self: center;
+    margin-top: -14px;
+}
+
+.hero__buttons {
+    margin-top: 1em;
+}

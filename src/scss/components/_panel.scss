@@ -1,0 +1,15 @@
+// components/_panel.scss
+
+.panel {
+    background-color: white;
+    box-shadow: 0 0 0.5em rgba(10, 10, 10, 0.05);
+    padding: 48px 32px;
+    margin-bottom: 48px;
+}
+
+.panel__heading {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 18px;
+    display: block;
+}

@@ -4,7 +4,10 @@
   "description": "",
   "main": "index.html",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "./bin/build",
+    "watch": "./bin/watch",
+    "dev": "live-server --no-browser & npm run watch"
   },
   "repository": {
     "type": "git",
@@ -17,7 +20,14 @@
   },
   "homepage": "https://github.com/jamesssooi/Croppr.js#readme",
   "dependencies": {
+    "babel-cli": "^6.22.2",
+    "babel-preset-env": "^1.1.8",
+    "bulma": "^0.3.1",
     "node-sass": "^4.4.0",
+    "nodemon": "^1.11.0",
     "pug": "^2.0.0-beta9"
+  },
+  "devDependencies": {
+    "live-server": "^1.2.0"
   }
 }

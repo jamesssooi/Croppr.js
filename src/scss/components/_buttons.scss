@@ -1,0 +1,12 @@
+// components/_buttons.scss
+
+
+.button__icon-right {
+    margin-left: 5px;
+}
+
+.is-medium {
+    .button__icon-right {
+        margin-left: 8px;
+    }
+}

@@ -1,18 +1,108 @@
 <!doctype html>
-<html>
 <head>
-    <script src="dist/croppr.js"></script>
-    <link rel="stylesheet" href="dist/croppr.css">
+  <title>Croppr.js - Lightweight vanilla JS image cropper</title>
+  <!-- Stylesheets-->
+  <link href="/dist/croppr.min.css" rel="stylesheet"/>
+  <link href="/dist/style.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css?family=Asap" rel="stylesheet"/>
+  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"/>
+  <!-- Javascript-->
+  <script src="/dist/croppr.min.js"></script>
+  <script src="/dist/main.js"></script>
+  <!-- Metadata-->
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="description" content="A vanilla JavaScript image cropper that's lightweight, awesome, and has absolutely zero dependencies"/>
+  <meta name="title" content="Croppr.js - Lightweight vanilla JS image cropper"/>
 </head>
-
 <body>
-    <h1>Croppr.js</h1>
-    <img src="https://unsplash.it/500/500/?random" alt="" id="cropper">
-
-    <script>
-        var croppr = new Croppr('#cropper', {
-            onUpdate: function(data) { console.log(data); },
-        });
-    </script>
+  <header class="container">
+    <div class="hero">
+      <div class="hero__banner"><img class="hero__logo" src="/assets/logo.svg"/>
+        <div class="hero__title">
+          <h1 class="hero__heading">Croppr.js</h1><span class="hero__subheading">Lightweight, awesome, vanilla JS image cropper.</span>
+          <div class="hero__buttons block"><a class="button is-primary">Install<i class="button__icon-right fa fa-download"></i></a> <a class="button is-black" href="https://github.com/jamesssooi/Croppr.js" target="_blank">Github<i class="button__icon-right fa fa-github-alt"></i></a></div>
+        </div>
+      </div>
+    </div>
+  </header>
+  <section class="container">
+    <div class="panel">
+      <div class="panel__body">
+        <div class="columns">
+          <div class="feature-item column"><span class="feature-item__icon"><img src="/assets/icons/feather.svg"/></span><span class="feature-item__heading">Lightweight</span><span class="feature-item__body">Croppr is as light as a feather at less than 5kb minified and gzipped!</span></div>
+          <div class="feature-item column"><span class="feature-item__icon"><img src="/assets/icons/js.svg"/></span><span class="feature-item__heading">Deliciously vanilla</span><span class="feature-item__body">Croppr is made only with 100% native, deliciously vanilla JavaScript</span></div>
+          <div class="feature-item column"><span class="feature-item__icon"><img src="/assets/icons/lego.svg"/></span><span class="feature-item__heading">Zero dependencies</span><span class="feature-item__body">Croppr is a strong, independent JavaScript component who don't need no dependencies</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="container">
+    <div class="panel"><span class="panel__heading">Demo</span>
+      <div class="panel__body">
+        <div class="columns">
+          <div class="column is-7">
+            <div class="cropper"><img src="https://unsplash.it/450/450" id="croppr"/></div>
+          </div>
+          <div class="column is-5">
+            <div class="selection-info"><span class="selection-info__title">Selection value</span><span class="selection-info__item" id="valX"><strong>x</strong>&nbsp;500</span><span class="selection-info__item" id="valY"><strong>y</strong>&nbsp;500</span><span class="selection-info__item" id="valW"><strong>width</strong>&nbsp;500</span><span class="selection-info__item" id="valH"><strong>height</strong>&nbsp;500</span></div>
+            <div class="option-item">
+              <div class="option-item__label">
+                <label class="label">Aspect Ratio</label>
+                <label class="checkbox">Enable
+                  <input type="checkbox" id="cb-ratio"/>
+                </label>
+              </div>
+              <div class="control is-grouped">
+                <p class="control is-expanded has-icon has-icon-left">
+                  <input class="input" type="text" id="input-ratio" disabled="disabled"/><span class="icon is-small">A</span>
+                </p>
+              </div>
+            </div>
+            <div class="option-item">
+              <div class="option-item__label">
+                <label class="label">Maximum size</label>
+                <label class="checkbox">Enable
+                  <input type="checkbox" id="max-checkbox"/>
+                </label>
+              </div>
+              <div class="control is-grouped">
+                <p class="control is-expanded has-icon has-icon-left">
+                  <input class="input" type="text" id="max-input-width" disabled="disabled"/><span class="icon is-small">W</span>
+                </p>
+                <p class="control is-expanded has-icon has-icon-left">
+                  <input class="input" type="text" id="max-input-height" disabled="disabled"/><span class="icon is-small">H</span>
+                </p>
+                <p class="control is-expanded has-icon has-icon-left"><span class="select is-fullwidth">
+                    <select id="max-input-unit" disabled="disabled">
+                      <option>%</option>
+                      <option>px</option>
+                    </select></span></p>
+              </div>
+            </div>
+            <div class="option-item">
+              <div class="option-item__label">
+                <label class="label">Minimum size</label>
+                <label class="checkbox">Enable
+                  <input type="checkbox"/>
+                </label>
+              </div>
+              <div class="control is-grouped">
+                <p class="control is-expanded has-icon has-icon-left">
+                  <input class="input" type="text" disabled="disabled"/><span class="icon is-small">W</span>
+                </p>
+                <p class="control is-expanded has-icon has-icon-left">
+                  <input class="input" type="text" disabled="disabled"/><span class="icon is-small">H</span>
+                </p>
+                <p class="control is-expanded has-icon has-icon-left"><span class="select is-fullwidth">
+                    <select disabled="disabled">
+                      <option>%</option>
+                      <option>px</option>
+                    </select></span></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 </body>
-</html>
