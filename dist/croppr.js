@@ -486,6 +486,7 @@ var Box = function () {
          * @param {Number} [minHeight]
          * @param {Array} [origin] The origin point to resize from.
          *     Defaults to [0, 0] (top left).
+         * @param {Number} [ratio] Ratio to maintain.
          */
 
     }, {
@@ -496,25 +497,42 @@ var Box = function () {
             var minWidth = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
             var minHeight = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
             var origin = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : [0, 0];
+            var ratio = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : null;
+
+
+            // Calculate new max/min widths & heights that constrains to the ratio
+            if (ratio) {
+                if (ratio > 1) {
+                    maxWidth = maxHeight * 1 / ratio;
+                    minHeight = minHeight * ratio;
+                } else if (ratio < 1) {
+                    maxHeight = maxWidth * ratio;
+                    minWidth = minHeight * 1 / ratio;
+                }
+            }
 
             if (maxWidth && this.width() > maxWidth) {
-                var factor = maxWidth / this.width();
-                this.scale(factor, origin);
+                var newWidth = maxWidth,
+                    newHeight = ratio === null ? this.height() : maxHeight;
+                this.resize(newWidth, newHeight, origin);
             }
 
             if (maxHeight && this.height() > maxHeight) {
-                var _factor2 = maxHeight / this.height();
-                this.scale(_factor2, origin);
+                var _newWidth = ratio === null ? this.width() : maxWidth,
+                    _newHeight = maxHeight;
+                this.resize(_newWidth, _newHeight, origin);
             }
 
             if (minWidth && this.width() < minWidth) {
-                var _factor3 = minWidth / this.width();
-                this.scale(_factor3, origin);
+                var _newWidth2 = minWidth,
+                    _newHeight2 = ratio === null ? this.height() : minHeight;
+                this.resize(_newWidth2, _newHeight2, origin);
             }
 
             if (minHeight && this.height() < minHeight) {
-                var _factor4 = minHeight / this.height();
-                this.scale(_factor4, origin);
+                var _newWidth3 = ratio === null ? this.width() : minWidth,
+                    _newHeight3 = minHeight;
+                this.resize(_newWidth3, _newHeight3, origin);
             }
 
             return this;
@@ -593,8 +611,9 @@ var CropprCore = function () {
             // Create DOM elements
             this.createDOM(this._targetEl);
 
-            // Convert % values to px
+            // Process option values
             this.options.convertToPixels(this.cropperEl);
+            //this.options.constrainValuesToRatio();
 
             // Listen for events from children
             this.attachHandlerEvents();
@@ -687,7 +706,7 @@ var CropprCore = function () {
             // Maintain minimum/maximum size
             var min = opts.minSize;
             var max = opts.maxSize;
-            box.constrainToSize(max.width, max.height, min.width, min.height, [0.5, 0.5]);
+            box.constrainToSize(max.width, max.height, min.width, min.height, [0.5, 0.5], opts.aspectRatio);
 
             // Constrain to boundary
             var parentWidth = this.cropperEl.offsetWidth;
@@ -911,7 +930,7 @@ var CropprCore = function () {
             // Maintain minimum/maximum size
             var min = this.options.minSize;
             var max = this.options.maxSize;
-            box.constrainToSize(max.width, max.height, min.width, min.height, origin);
+            box.constrainToSize(max.width, max.height, min.width, min.height, origin, this.options.aspectRatio);
 
             // Constrain to boundary
             var parentWidth = this.cropperEl.offsetWidth;
@@ -1119,6 +1138,27 @@ var CropprCore = function () {
                 returnMode = s;
             }
 
+            // Create function to force max and min sizes to respect aspect ratio.
+            // This function MUST BE CALLED if any of the max or min size values
+            // are updated.
+            var constrainValuesToRatio = function constrainValuesToRatio() {
+                if (this.aspectRatio === null) {
+                    return;
+                }
+
+                var ratio = this.aspectRatio;
+                var maxSize = this.maxSize,
+                    minSize = this.minSize;
+                if (maxSize.width !== null && maxSize.height !== null) {
+                    maxSize.width = maxSize.height * 1 / ratio;
+                }
+                if (minSize.width !== null && minSize.height !== null) {
+                    minSize.width = minSize.height * 1 / ratio;
+                }
+
+                return this;
+            };
+
             // Create function to convert % values to pixels
             var convertToPixels = function convertToPixels(container) {
                 var width = container.offsetWidth;
@@ -1153,7 +1193,8 @@ var CropprCore = function () {
                 returnMode: defaultValue(returnMode, defaults$$1.returnMode),
                 onUpdate: defaultValue(onUpdate, defaults$$1.onUpdate),
                 onInitialize: defaultValue(onInitialize, defaults$$1.onInitialize),
-                convertToPixels: convertToPixels
+                convertToPixels: convertToPixels,
+                constrainValuesToRatio: constrainValuesToRatio
             };
         }
     }]);

@@ -11,6 +11,8 @@
 
     <script>
         var croppr = new Croppr('#cropper', {
+            //aspectRatio: 1.2,
+            minSize: [100, 100, 'px'],
             onUpdate: function(data) { console.log(data); },
         });
     </script>

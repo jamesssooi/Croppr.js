@@ -199,27 +199,45 @@ export default class Box {
      * @param {Number} [minHeight]
      * @param {Array} [origin] The origin point to resize from.
      *     Defaults to [0, 0] (top left).
+     * @param {Number} [ratio] Ratio to maintain.
      */
     constrainToSize(maxWidth = null, maxHeight = null,
-                    minWidth = null, minHeight = null, origin=[0, 0]) {
+                    minWidth = null, minHeight = null,
+                    origin=[0, 0], ratio = null) {
+        
+        // Calculate new max/min widths & heights that constrains to the ratio
+        if (ratio) {
+            if (ratio > 1) { 
+                maxWidth = maxHeight * 1/ratio;
+                minHeight = minHeight * ratio;
+            } else if (ratio < 1) {
+                maxHeight = maxWidth * ratio;
+                minWidth = minHeight * 1/ratio;
+            }
+        }
+        
         if (maxWidth && this.width() > maxWidth) {
-            const factor = maxWidth / this.width();
-            this.scale(factor, origin);
+            const newWidth = maxWidth,
+                  newHeight = ratio === null ? this.height() : maxHeight;
+            this.resize(newWidth, newHeight, origin);
         }
 
         if (maxHeight && this.height() > maxHeight) {
-            const factor = maxHeight / this.height();
-            this.scale(factor, origin);
+            const newWidth = ratio === null ? this.width() : maxWidth,
+                  newHeight = maxHeight;
+            this.resize(newWidth, newHeight, origin);
         }
 
         if (minWidth && this.width() < minWidth) {
-            const factor = minWidth / this.width();
-            this.scale(factor, origin);
+            const newWidth = minWidth,
+                  newHeight = ratio === null ? this.height() : minHeight;
+            this.resize(newWidth, newHeight, origin);
         }
 
         if (minHeight && this.height() < minHeight) {
-            const factor = minHeight / this.height();
-            this.scale(factor, origin);
+            const newWidth = ratio === null ? this.width() : minWidth,
+                  newHeight = minHeight;
+            this.resize(newWidth, newHeight, origin);
         }
 
         return this;

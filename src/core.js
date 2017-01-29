@@ -66,8 +66,9 @@ export default class CropprCore {
         // Create DOM elements
         this.createDOM(this._targetEl);
 
-        // Convert % values to px
+        // Process option values
         this.options.convertToPixels(this.cropperEl);
+        //this.options.constrainValuesToRatio();
 
         // Listen for events from children
         this.attachHandlerEvents();
@@ -157,8 +158,8 @@ export default class CropprCore {
         // Maintain minimum/maximum size
         const min = opts.minSize;
         const max = opts.maxSize;
-        box.constrainToSize(max.width, max.height, min.width,
-                            min.height, [0.5, 0.5]);
+        box.constrainToSize(max.width, max.height, min.width, min.height,
+                            [0.5, 0.5], opts.aspectRatio);
 
         // Constrain to boundary
         const parentWidth = this.cropperEl.offsetWidth;
@@ -352,7 +353,8 @@ export default class CropprCore {
         // Maintain minimum/maximum size
         const min = this.options.minSize;
         const max = this.options.maxSize;
-        box.constrainToSize(max.width, max.height, min.width, min.height, origin);
+        box.constrainToSize(max.width, max.height, min.width,
+                            min.height, origin, this.options.aspectRatio);
 
         // Constrain to boundary
         const parentWidth = this.cropperEl.offsetWidth;
@@ -536,6 +538,25 @@ export default class CropprCore {
             returnMode = s;
         }
 
+        // Create function to force max and min sizes to respect aspect ratio.
+        // This function MUST BE CALLED if any of the max or min size values
+        // are updated.
+        const constrainValuesToRatio = function() {
+            if (this.aspectRatio === null) { return; }
+
+            const ratio = this.aspectRatio;
+            let maxSize = this.maxSize,
+                minSize = this.minSize;
+            if (maxSize.width !== null && maxSize.height !== null) {
+                maxSize.width = maxSize.height * 1/ratio;
+            }
+            if (minSize.width !== null && minSize.height !== null) {
+                minSize.width = minSize.height * 1/ratio;
+            }
+
+            return this;
+        }
+
         // Create function to convert % values to pixels
         const convertToPixels = function(container) {
             const width = container.offsetWidth;
@@ -568,7 +589,8 @@ export default class CropprCore {
             returnMode: defaultValue(returnMode, defaults.returnMode),
             onUpdate: defaultValue(onUpdate, defaults.onUpdate),
             onInitialize: defaultValue(onInitialize, defaults.onInitialize),
-            convertToPixels: convertToPixels
+            convertToPixels: convertToPixels,
+            constrainValuesToRatio: constrainValuesToRatio
         }
     }
 }
