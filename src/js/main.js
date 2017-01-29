@@ -11,7 +11,6 @@ window.onload = function() {
     // Create Croppr instance
     let croppr = new Croppr('#croppr', {
         startSize: [80, 80, '%'],
-        maxSize: [100, 100, 'px'],
         onUpdate: value => {
             updateValue(value.x, value.y, value.width, value.height);
         }
@@ -59,34 +58,66 @@ window.onload = function() {
 
     // Maximum size
     const maxCheckbox = document.getElementById('max-checkbox');
-    const maxInputWidth = document.getElementById('max-input-width');
-    const maxInputHeight = document.getElementById('max-input-height');
-    const maxInputUnit = document.getElementById('max-input-unit');
+    const maxInputs = [
+        document.getElementById('max-input-width'),
+        document.getElementById('max-input-height'),
+        document.getElementById('max-input-unit')
+    ];
     maxCheckbox.addEventListener('change', (event) => {
-        let elements = [maxInputWidth, maxInputHeight, maxInputUnit];
-
         if (!event.target.checked) {
             croppr.options.maxSize = {width: null, height: null};
-            elements.map(el => {
+            maxInputs.map(el => {
                 el.disabled = true;
                 el.classList.remove('is-danger');
             });
             croppr.reset();
             return;
+        } else {
+            maxInputs.map(el => { el.disabled = false; });
         }
-        
-        elements.map(el => { el.disabled = false; });
 
-        const values = elements.map(parseElementValues);
+        const values = maxInputs.map(parseElementValues);
         croppr.options.maxSize = {
-            width: values[0],
-            height: values[1],
+            width: Number(values[0]),
+            height: Number(values[1]),
             unit: values[2]
         };
         croppr.reset();
     });
+    maxInputs.map(el => { el.addEventListener('input', handleChange(croppr, 'maxSize', maxInputs));
+    });
 
-    console.log(croppr);
+
+    // Minimum size
+    const minCheckbox = document.getElementById('min-checkbox');
+    const minInputs = [
+        document.getElementById('min-input-width'),
+        document.getElementById('min-input-height'),
+        document.getElementById('min-input-unit')
+    ];
+    minCheckbox.addEventListener('change', (event) => {
+        if (!event.target.checked) {
+            croppr.options.minSize = {width: null, height: null};
+            minInputs.map(el => {
+                el.disabled = true;
+                el.classList.remove('is-danger');
+            });
+            croppr.reset();
+            return;
+        } else {
+            minInputs.map(el => { el.disabled = false; });
+        }
+
+        const values = minInputs.map(parseElementValues);
+        croppr.options.minSize = {
+            width: Number(values[0]),
+            height: Number(values[1]),
+            unit: values[2]
+        };
+        croppr.reset();
+    });
+    minInputs.map(el => { el.addEventListener('input', handleChange(croppr, 'minSize', minInputs));
+    });
 }
 
 
@@ -122,5 +153,23 @@ function parseElementValues(element) {
         }
     } else {
         return value;
+    }
+}
+
+function handleChange(croppr, option, elements) {
+    return function() {
+        const values = elements.map(parseElementValues);
+        croppr.options[option] = {
+            width: Number(values[0]),
+            height: Number(values[1]),
+            unit: values[2],
+        }
+
+        // Convert to pixels
+        if (values[2] === '%') {
+            croppr.options.convertToPixels(croppr.cropperEl);
+        }
+        
+        croppr.reset();
     }
 }

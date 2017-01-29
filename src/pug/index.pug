@@ -11,11 +11,14 @@ head
   // Javascript
   script(src="/dist/croppr.min.js")
   script(src="/dist/main.js")
+  script(src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js")
 
   // Metadata
   meta(name="viewport" content="width=device-width, initial-scale=1")
   meta(name="description" content="A vanilla JavaScript image cropper that's lightweight, awesome, and has absolutely zero dependencies")
   meta(name="title" content="Croppr.js - Lightweight vanilla JS image cropper")
+  link(rel="shortcut icon" href="/favicon.ico" type="image/x-icon")
+  link(rel="icon" href="/favicon.ico" type="image/x-icon")
 
 body
   header.container
@@ -26,7 +29,7 @@ body
           h1.hero__heading Croppr.js
           span.hero__subheading Lightweight, awesome, vanilla JS image cropper.
           div.hero__buttons.block
-            a.button.is-primary
+            a.button.is-primary(href="#install")
              | Install
              i.button__icon-right.fa.fa-download
             | 
@@ -34,7 +37,7 @@ body
               href="https://github.com/jamesssooi/Croppr.js"
               target="_blank"
             )
-              | Github
+              | GitHub
               i.button__icon-right.fa.fa-github-alt
   
   section.container
@@ -81,7 +84,10 @@ body
                   input(type="checkbox" id="cb-ratio")
               div.control.is-grouped
                 p.control.is-expanded.has-icon.has-icon-left
-                  input.input(type="text" id="input-ratio" disabled)
+                  input.input(type="text"
+                              id="input-ratio"
+                              value="1.0"
+                              disabled)
                   span.icon.is-small A
 
             div.option-item
@@ -92,32 +98,188 @@ body
                   input(type="checkbox" id="max-checkbox")
               div.control.is-grouped
                 p.control.is-expanded.has-icon.has-icon-left
-                  input.input(type="text" id="max-input-width" disabled)
+                  input.input(type="text"
+                              id="max-input-width"
+                              value="150"
+                              disabled)
                   span.icon.is-small W
                 p.control.is-expanded.has-icon.has-icon-left
-                  input.input(type="text" id="max-input-height" disabled)
+                  input.input(type="text"
+                              id="max-input-height"
+                              value="150"
+                              disabled)
                   span.icon.is-small H
                 p.control.is-expanded.has-icon.has-icon-left
                   span.select.is-fullwidth
                     select(id="max-input-unit" disabled)
-                      option %
                       option px
+                      option(value='%') %
 
             div.option-item
               div.option-item__label
                 label.label Minimum size
                 label.checkbox
                   | Enable
-                  input(type="checkbox")
+                  input(type="checkbox" id="min-checkbox")
               div.control.is-grouped
                 p.control.is-expanded.has-icon.has-icon-left
-                  input.input(type="text" disabled)
+                  input.input(type="text"
+                              id="min-input-width"
+                              value="100"
+                              disabled)
                   span.icon.is-small W
                 p.control.is-expanded.has-icon.has-icon-left
-                  input.input(type="text" disabled)
+                  input.input(type="text"
+                              id="min-input-height"
+                              value="100"
+                              disabled)
                   span.icon.is-small H
                 p.control.is-expanded.has-icon.has-icon-left
                   span.select.is-fullwidth
-                    select(disabled)
-                      option %
+                    select(id="min-input-unit" disabled)
                       option px
+                      option(value='%') %
+
+  section.container
+    div.panel
+      span.panel__heading(id="install") Installation
+      div.panel__body.content
+        ul
+          li.step
+            span.step__title Using NPM
+            pre.code.prettyprint.lang-bash
+              | npm install croppr --save
+          li.step
+            span.step__title Using Bower
+            pre.code.prettyprint.lang-bash
+              | bower install croppr
+          li.step
+            a.step__title(
+              href="https://github.com/jamesssooi/Croppr.js/tree/master/dist"
+              target="_blank"
+            )
+              | Download distribution files at GitHub.
+  
+  section.container
+    div.panel
+      span.panel__heading(id="usage") Basic Usage
+      div.panel__body.content
+        ol
+          li.step
+            span.step__title Include the files in your project:
+            pre.code.prettyprint.lang-html
+              = '<link src="path/to/croppr.css" rel="stylesheet"/>'
+              br
+              = '<script src="path/to/croppr.js"></script>'
+            span.step__title Or if you're smart and use a module bundler:
+            pre.code.prettyprint.lang-js.
+              // CommonJS
+              var Croppr = require('croppr');
+              
+              // ES6 import
+              import Croppr from 'croppr';
+
+              // Don't forgot to bundle the CSS files as well!
+          li.step
+            span.step__title In your HTML document:
+            pre.code.prettyprint.lang-html
+              = '<img src="path/to/image.jpg" id="croppr"/>'
+          li.step
+            span.step__title Create the instance in your JavaScript file:
+            pre.code.prettyprint.lang-js.
+              var cropper = new Croppr('#croppr', {
+                // options
+              });
+
+              // Protip: You can also pass an Element object instead of a selector
+
+          li.step
+            span.step__title And to retrieve the crop value:
+            pre.code.prettyprint.lang-js.
+              var value = croppr.getValue();
+              // data = {x: 20, y: 20: width: 120, height: 120}
+  
+  section.container
+    div.panel
+      span.panel__heading Options
+      div.panel__body
+        table.options-tbl.table
+          thead
+            tr
+              th.options-tbl__option-tr Option
+              th Description
+          tbody
+            tr.content.option
+              td.options-tbl__option-td aspectRatio
+              td
+                p.option__desc Constrain the crop region to an aspect ratio.
+                ul
+                  li Type: <code>Number</code>
+                  li Default: <code>null</code>
+                  li Example: <code>aspectRatio: 1</code> (Square)
+            tr.content.option
+              td.options-tbl__option-td maxSize
+              td
+                p.option__desc Constrain the crop region to a maximum size.
+                ul
+                  li Type: <code>[width, height, unit?]</code>
+                  li Default: <code>null</code>
+                  li Example: <code>maxSize: [50, 50, '%']</code> (Max size of 50% of the image)
+                p Note: <code>unit</code> accepts a value of 'px' or '%'. Defaults to 'px'.
+            tr.content.option
+              td.options-tbl__option-td minSize
+              td
+                p.option__desc Constrain the crop region to a minimum size.
+                ul
+                  li Type: <code>[width, height, unit?]</code>
+                  li Default: <code>null</code>
+                  li Example: <code>maxSize: [100, 100, 'px']</code> (Min width and height of 100px)
+            tr.content.option
+              td.options-tbl__option-td startSize
+              td
+                p.option__desc The starting size of the crop region when it is initialized.
+                ul
+                  li Type: <code>[width, height, unit?]</code>
+                  li Default: <code>[100, 100, '%']</code> (A starting crop region as large as possible)
+                  li Example: <code>startSize: [50, 50]</code> (A starting crop region of 50% of the image size)
+            tr.content.option
+              td.options-tbl__option-td onUpdate
+              td
+                p.option__desc A callback function that is called when the crop region is updated.
+                ul
+                  li Type: <code>Function</code>
+                  li Arguments: <code>value = {x, y, width, height}</code>
+                  li Example:
+                    pre.code.prettyprint.lang-js.
+                      onUpdate: function(value) {
+                        console.log(value.x, value.y, value.width, value.height);
+                      }
+            tr.content.option
+              td.options-tbl__option-td onInitialize
+              td
+                p.option__desc A callback function that is called when the Croppr instance is fully initialized.
+                ul
+                  li Type: <code>Function</code>
+                  li Arguments: The Croppr instance
+                  li Example:
+                    pre.code.prettyprint.lang-js.
+                      onInitialize: function(instance) {
+                        // do things here
+                      }
+            tr.content.option
+              td.options-tbl__option-td returnMode
+              td
+                p.option__desc Define how the crop region should be calculated.
+                ul
+                  li Type: <code>String</code>
+                  li Default: <code>"real"</code>
+                  li Possible values: <code>"real"</code>, <code>"ratio"</code>, or <code>"raw"</code>
+                    ul
+                      li <code>real</code> returns the crop region values based on the size of the image's actual sizes. This ensures that the crop region values are the same regardless if the Croppr element is scaled or not.
+                      li <code>ratio</code> returns the crop region values as a ratio between 0 to 1. e.g. For example, an x, y position at the center will be {x: 0.5, y: 0.5}.
+                      li <code>raw</code> returns the crop region values as is based on the size of the Croppr element.
+
+  footer.footer
+    div.container
+      div.content.has-text-centered
+        p <strong>Croppr.js</strong> by <a href="https://github.com/jamesssooi" target="_blank">James Ooi</a>. Released under the <a href="https://github.com/jamesssooi/Croppr.js/blob/master/LICENSE" target="_blank">MIT License</a>.

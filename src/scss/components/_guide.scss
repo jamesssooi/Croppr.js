@@ -1,0 +1,45 @@
+// components/_guide.scss
+
+.step {
+    margin-bottom: 18px;
+}
+
+.step__title {
+    margin-bottom: 6px;
+    display: block;
+    font-size: 1em;
+}
+
+// Options
+.options-tbl td {
+    padding: 1em;
+}
+
+.options-tbl__option-tr {
+    width: 200px;
+    font-weight: bold;
+}
+
+.options-tbl__option-td {
+    font-weight: bold
+}
+
+.options-tbl .content p {
+    margin-bottom: 6px;
+}
+
+.options-tbl ul {
+    margin-top: 0;
+}
+
+.option {
+    color: #787878;
+}
+
+.option__desc {
+    color: #4a4a4a;
+}
+
+.option code {
+    color: darken(#787878, 5%);
+}
