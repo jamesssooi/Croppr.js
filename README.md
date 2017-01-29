@@ -6,8 +6,7 @@
 * Made only with native, delicious vanilla JS
 * Zero dependencies
 
-Try it out in the demo →
-_Demo in progress_
+[Try it out in the demo →](https://jamesssooi.github.io/Croppr.js)
 
 ## Installation
 
