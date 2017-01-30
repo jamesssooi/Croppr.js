@@ -1,4 +1,4 @@
-![Croppr.js](https://raw.githubusercontent.com/jamesssooi/Croppr.js/gh-pages/assets/logo_gh.png)
+![Croppr.js](https://raw.githubusercontent.com/jamesssooi/Croppr.js/master/assets/logo.png)
 
 ### A vanilla JavaScript image cropper that's lightweight, awesome, and has absolutely zero dependencies.
 
