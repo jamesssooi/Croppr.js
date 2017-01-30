@@ -4,7 +4,7 @@
   <!-- Stylesheets-->
   <link href="dist/croppr.min.css" rel="stylesheet"/>
   <link href="dist/style.css" rel="stylesheet"/>
-  <link href="https://fonts.googleapis.com/css?family=Asap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css?family=Asap:400,700" rel="stylesheet"/>
   <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"/>
   <!-- Javascript-->
   <script src="dist/croppr.min.js"></script>
@@ -33,7 +33,7 @@
     <div class="panel">
       <div class="panel__body">
         <div class="columns">
-          <div class="feature-item column"><span class="feature-item__icon"><img src="assets/icons/feather.svg"/></span><span class="feature-item__heading">Lightweight</span><span class="feature-item__body">Croppr is as light as a feather at less than 5kb minified and gzipped!</span></div>
+          <div class="feature-item column"><span class="feature-item__icon"><img src="assets/icons/feather.svg"/></span><span class="feature-item__heading">Lightweight</span><span class="feature-item__body">Croppr is as light as a feather at less than 6kb minified and gzipped!</span></div>
           <div class="feature-item column"><span class="feature-item__icon"><img src="assets/icons/js.svg"/></span><span class="feature-item__heading">Deliciously vanilla</span><span class="feature-item__body">Croppr is made only with 100% native, deliciously vanilla JavaScript</span></div>
           <div class="feature-item column"><span class="feature-item__icon"><img src="assets/icons/lego.svg"/></span><span class="feature-item__heading">Zero dependencies</span><span class="feature-item__body">Croppr is a strong, independent JavaScript component who don't need no dependencies</span></div>
         </div>
@@ -119,7 +119,7 @@
           <li class="step"><span class="step__title">Using Bower</span>
             <pre class="code prettyprint lang-bash">bower install croppr</pre>
           </li>
-          <li class="step"><a class="step__title" href="https://github.com/jamesssooi/Croppr.js/tree/master/dist" target="_blank">Download distribution files at GitHub.</a></li>
+          <li class="step"><span class="step__title">or <a href="https://github.com/jamesssooi/Croppr.js/tree/master/dist" target="_blank">download distribution files at GitHub.</a></span></li>
         </ul>
       </div>
     </div>
@@ -129,7 +129,7 @@
       <div class="panel__body content">
         <ol>
           <li class="step"><span class="step__title">Include the files in your project:</span>
-            <pre class="code prettyprint lang-html">&lt;link src=&quot;path/to/croppr.css&quot; rel=&quot;stylesheet&quot;/&gt;<br/>&lt;script src=&quot;path/to/croppr.js&quot;&gt;&lt;/script&gt;</pre><span class="step__title">Or if you're smart and use a module bundler:</span>
+            <pre class="code prettyprint lang-html">&lt;link src=&quot;path/to/croppr.css&quot; rel=&quot;stylesheet&quot;/&gt;<br/>&lt;script src=&quot;path/to/croppr.js&quot;&gt;&lt;/script&gt;</pre><span class="step__title">Or if you're smart and you use a module bundler:</span>
             <pre class="code prettyprint lang-js">// CommonJS
 var Croppr = require('croppr');
 
@@ -142,7 +142,7 @@ import Croppr from 'croppr';
             <pre class="code prettyprint lang-html">&lt;img src=&quot;path/to/image.jpg&quot; id=&quot;croppr&quot;/&gt;</pre>
           </li>
           <li class="step"><span class="step__title">Create the instance in your JavaScript file:</span>
-            <pre class="code prettyprint lang-js">var cropper = new Croppr('#croppr', {
+            <pre class="code prettyprint lang-js">var croppr = new Croppr('#croppr', {
   // options
 });
 
@@ -201,6 +201,7 @@ import Croppr from 'croppr';
                   <li>Default: <code>null</code></li>
                   <li>Example: <code>maxSize: [100, 100, 'px']</code> (Min width and height of 100px)</li>
                 </ul>
+                <p>Note: <code>unit</code> accepts a value of 'px' or '%'. Defaults to 'px'.</p>
               </td>
             </tr>
             <tr class="content option">
@@ -212,6 +213,7 @@ import Croppr from 'croppr';
                   <li>Default: <code>[100, 100, '%']</code> (A starting crop region as large as possible)</li>
                   <li>Example: <code>startSize: [50, 50]</code> (A starting crop region of 50% of the image size)</li>
                 </ul>
+                <p>Note: <code>unit</code> accepts a value of 'px' or '%'. Defaults to '%'.</p>
               </td>
             </tr>
             <tr class="content option">

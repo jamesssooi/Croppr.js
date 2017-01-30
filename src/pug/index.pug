@@ -5,7 +5,8 @@ head
   // Stylesheets
   link(href="dist/croppr.min.css" rel="stylesheet")
   link(href="dist/style.css" rel="stylesheet")
-  link(href="https://fonts.googleapis.com/css?family=Asap" rel="stylesheet")
+  link(href="https://fonts.googleapis.com/css?family=Asap:400,700"
+       rel="stylesheet")
   link(href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet")
 
   // Javascript
@@ -49,7 +50,7 @@ body
             span.feature-item__icon
               img(src="assets/icons/feather.svg")
             span.feature-item__heading Lightweight
-            span.feature-item__body Croppr is as light as a feather at less than 5kb minified and gzipped!
+            span.feature-item__body Croppr is as light as a feather at less than 6kb minified and gzipped!
           div.feature-item.column
             span.feature-item__icon
               img(src="assets/icons/js.svg")
@@ -155,11 +156,13 @@ body
             pre.code.prettyprint.lang-bash
               | bower install croppr
           li.step
-            a.step__title(
-              href="https://github.com/jamesssooi/Croppr.js/tree/master/dist"
-              target="_blank"
-            )
-              | Download distribution files at GitHub.
+            span.step__title
+              | or 
+              a(
+                href="https://github.com/jamesssooi/Croppr.js/tree/master/dist"
+                target="_blank"
+              )
+                | download distribution files at GitHub.
   
   section.container
     div.panel
@@ -172,7 +175,7 @@ body
               = '<link src="path/to/croppr.css" rel="stylesheet"/>'
               br
               = '<script src="path/to/croppr.js"></script>'
-            span.step__title Or if you're smart and use a module bundler:
+            span.step__title Or if you're smart and you use a module bundler:
             pre.code.prettyprint.lang-js.
               // CommonJS
               var Croppr = require('croppr');
@@ -188,7 +191,7 @@ body
           li.step
             span.step__title Create the instance in your JavaScript file:
             pre.code.prettyprint.lang-js.
-              var cropper = new Croppr('#croppr', {
+              var croppr = new Croppr('#croppr', {
                 // options
               });
 
@@ -235,6 +238,7 @@ body
                   li Type: <code>[width, height, unit?]</code>
                   li Default: <code>null</code>
                   li Example: <code>maxSize: [100, 100, 'px']</code> (Min width and height of 100px)
+                p Note: <code>unit</code> accepts a value of 'px' or '%'. Defaults to 'px'.
             tr.content.option
               td.options-tbl__option-td startSize
               td
@@ -243,6 +247,7 @@ body
                   li Type: <code>[width, height, unit?]</code>
                   li Default: <code>[100, 100, '%']</code> (A starting crop region as large as possible)
                   li Example: <code>startSize: [50, 50]</code> (A starting crop region of 50% of the image size)
+                p Note: <code>unit</code> accepts a value of 'px' or '%'. Defaults to '%'.
             tr.content.option
               td.options-tbl__option-td onUpdate
               td
