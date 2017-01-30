@@ -25,10 +25,11 @@
     bottom: 0;
     left: 0;
     z-index: 1;
+    cursor: crosshair;
 }
 
 .croppr-region {
-    border: 1px dashed rgba(255, 255, 255, 0.5);
+    border: 1px dashed rgba(0, 0, 0, 0.5);
     position: absolute;
     z-index: 3;
     cursor: move;
@@ -47,10 +48,9 @@
 .croppr-handle {
     border: 1px solid black;
     background-color: white;
-    border-radius: 30px 30px;
+    /*border-radius: 30px 30px;*/
     width: 10px;
     height: 10px;
-    opacity: 0.8;
     position: absolute;
     z-index: 4;
     transform: translate(-50%, -50%);

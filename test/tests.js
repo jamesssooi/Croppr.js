@@ -308,6 +308,9 @@ function createMockCroppr(options, _deferred) {
         // Mock clipped image el
         this.imageClippedEl = { style: {clip: null}}
 
+        // Mock overlayEl
+        this.overlayEl = document.createElement('div');
+
         // Mock regionEl
         this.regionEl = document.createElement('div');
 

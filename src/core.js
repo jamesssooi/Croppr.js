@@ -73,6 +73,7 @@ export default class CropprCore {
         // Listen for events from children
         this.attachHandlerEvents();
         this.attachRegionEvents();
+        this.attachOverlayListeners();
 
         // Bootstrap this cropper instance
         this.box = this.initializeBox(this.options);
@@ -233,11 +234,11 @@ export default class CropprCore {
             e.stopPropagation();
             document.addEventListener('mouseup', onMouseUp);
             document.addEventListener('mousemove', onMouseMove);
+
             // Notify parent
-            const event = new CustomEvent('regionstart', {
+            eventBus.dispatchEvent(new CustomEvent('regionstart', {
                 detail: {mouseX: e.clientX, mouseY: e.clientY}
-            });
-            eventBus.dispatchEvent(event);
+            }));
         }
 
         function onMouseUp(e) {
@@ -248,11 +249,59 @@ export default class CropprCore {
 
         function onMouseMove(e) {
             e.stopPropagation();
+
             // Notify parent
-            const event = new CustomEvent('regionmove', {
+            eventBus.dispatchEvent(new CustomEvent('regionmove', {
                 detail: {mouseX: e.clientX, mouseY: e.clientY}
-            });
-            eventBus.dispatchEvent(event);
+            }));
+        }
+    }
+
+    /**
+     * Attach event listeners for the overlay element.
+     * Enables the creation of a new selection by dragging an empty area.
+     */
+    attachOverlayListeners() {
+        const SOUTHEAST_HANDLE_IDX = 4;
+        const self = this;
+        this.overlayEl.addEventListener('mousedown', onMouseDown);
+
+        function onMouseDown(e) {
+            e.stopPropagation();
+            document.addEventListener('mouseup', onMouseUp);
+            document.addEventListener('mousemove', onMouseMove);
+
+            // Calculate mouse's position in relative to the container
+            const container = self.cropperEl.getBoundingClientRect();
+            const mouseX = e.clientX - container.left;
+            const mouseY = e.clientY - container.top;
+
+            // Move box to mouse position
+            self.box = new Box(mouseX, mouseY, mouseX + 1, mouseY + 1);
+            self.redraw();
+            
+            // Activate the bottom right handle
+            self.eventBus.dispatchEvent(new CustomEvent('handlestart', {
+                detail: {handle: self.handles[SOUTHEAST_HANDLE_IDX]}
+            }));
+
+            // Simulate movement of handle to trigger constrains
+            self.eventBus.dispatchEvent(new CustomEvent('handlemove', {
+                detail: {mouseX: e.clientX, mouseY: e.clientY}
+            }));
+        }
+
+        function onMouseUp(e) {
+            e.stopPropagation();
+            document.removeEventListener('mouseup', onMouseUp);
+            document.removeEventListener('mousemove', onMouseMove);
+        }
+
+        function onMouseMove(e) {
+            e.stopPropagation();
+            self.eventBus.dispatchEvent(new CustomEvent('handlemove', {
+                detail: {mouseX: e.clientX, mouseY: e.clientY}
+            }));
         }
     }
 

@@ -186,10 +186,9 @@ function Handle(position, constraints, cursor, eventBus) {
         document.addEventListener('mousemove', onMouseMove);
 
         // Notify parent
-        var event = new CustomEvent('handlestart', {
+        self.eventBus.dispatchEvent(new CustomEvent('handlestart', {
             detail: { handle: self }
-        });
-        self.eventBus.dispatchEvent(event);
+        }));
     }
 
     function onMouseUp(e) {
@@ -198,20 +197,18 @@ function Handle(position, constraints, cursor, eventBus) {
         document.removeEventListener('mousemove', onMouseMove);
 
         // Notify parent
-        var event = new CustomEvent('handleend', {
+        self.eventBus.dispatchEvent(new CustomEvent('handleend', {
             detail: { handle: self }
-        });
-        self.eventBus.dispatchEvent(event);
+        }));
     }
 
     function onMouseMove(e) {
         e.stopPropagation();
 
         // Notify parent
-        var event = new CustomEvent('handlemove', {
+        self.eventBus.dispatchEvent(new CustomEvent('handlemove', {
             detail: { mouseX: e.clientX, mouseY: e.clientY }
-        });
-        self.eventBus.dispatchEvent(event);
+        }));
     }
 };
 
@@ -618,6 +615,7 @@ var CropprCore = function () {
             // Listen for events from children
             this.attachHandlerEvents();
             this.attachRegionEvents();
+            this.attachOverlayListeners();
 
             // Bootstrap this cropper instance
             this.box = this.initializeBox(this.options);
@@ -791,11 +789,11 @@ var CropprCore = function () {
                 e.stopPropagation();
                 document.addEventListener('mouseup', onMouseUp);
                 document.addEventListener('mousemove', onMouseMove);
+
                 // Notify parent
-                var event = new CustomEvent('regionstart', {
+                eventBus.dispatchEvent(new CustomEvent('regionstart', {
                     detail: { mouseX: e.clientX, mouseY: e.clientY }
-                });
-                eventBus.dispatchEvent(event);
+                }));
             }
 
             function onMouseUp(e) {
@@ -806,11 +804,62 @@ var CropprCore = function () {
 
             function onMouseMove(e) {
                 e.stopPropagation();
+
                 // Notify parent
-                var event = new CustomEvent('regionmove', {
+                eventBus.dispatchEvent(new CustomEvent('regionmove', {
                     detail: { mouseX: e.clientX, mouseY: e.clientY }
-                });
-                eventBus.dispatchEvent(event);
+                }));
+            }
+        }
+
+        /**
+         * Attach event listeners for the overlay element.
+         * Enables the creation of a new selection by dragging an empty area.
+         */
+
+    }, {
+        key: 'attachOverlayListeners',
+        value: function attachOverlayListeners() {
+            var SOUTHEAST_HANDLE_IDX = 4;
+            var self = this;
+            this.overlayEl.addEventListener('mousedown', onMouseDown);
+
+            function onMouseDown(e) {
+                e.stopPropagation();
+                document.addEventListener('mouseup', onMouseUp);
+                document.addEventListener('mousemove', onMouseMove);
+
+                // Calculate mouse's position in relative to the container
+                var container = self.cropperEl.getBoundingClientRect();
+                var mouseX = e.clientX - container.left;
+                var mouseY = e.clientY - container.top;
+
+                // Move box to mouse position
+                self.box = new Box(mouseX, mouseY, mouseX + 1, mouseY + 1);
+                self.redraw();
+
+                // Activate the bottom right handle
+                self.eventBus.dispatchEvent(new CustomEvent('handlestart', {
+                    detail: { handle: self.handles[SOUTHEAST_HANDLE_IDX] }
+                }));
+
+                // Simulate movement of handle to trigger constrains
+                self.eventBus.dispatchEvent(new CustomEvent('handlemove', {
+                    detail: { mouseX: e.clientX, mouseY: e.clientY }
+                }));
+            }
+
+            function onMouseUp(e) {
+                e.stopPropagation();
+                document.removeEventListener('mouseup', onMouseUp);
+                document.removeEventListener('mousemove', onMouseMove);
+            }
+
+            function onMouseMove(e) {
+                e.stopPropagation();
+                self.eventBus.dispatchEvent(new CustomEvent('handlemove', {
+                    detail: { mouseX: e.clientX, mouseY: e.clientY }
+                }));
             }
         }
 

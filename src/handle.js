@@ -37,10 +37,9 @@ export default class Handle {
             document.addEventListener('mousemove', onMouseMove);
 
             // Notify parent
-            const event = new CustomEvent('handlestart', {
+            self.eventBus.dispatchEvent(new CustomEvent('handlestart', {
                 detail: {handle: self}
-            });
-            self.eventBus.dispatchEvent(event);
+            }));
         }
 
         function onMouseUp(e) {
@@ -49,20 +48,18 @@ export default class Handle {
             document.removeEventListener('mousemove', onMouseMove);
 
             // Notify parent
-            const event = new CustomEvent('handleend', {
+            self.eventBus.dispatchEvent(new CustomEvent('handleend', {
                 detail: {handle: self}
-            });
-            self.eventBus.dispatchEvent(event);
+            }));
         }
 
         function onMouseMove(e) {
             e.stopPropagation();
 
             // Notify parent
-            const event = new CustomEvent('handlemove', {
+            self.eventBus.dispatchEvent(new CustomEvent('handlemove', {
                 detail: {mouseX: e.clientX, mouseY: e.clientY}
-            });
-            self.eventBus.dispatchEvent(event);
+            }));
         }
     }
 }
