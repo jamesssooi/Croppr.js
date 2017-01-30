@@ -19,6 +19,17 @@
     "url": "https://github.com/jamesssooi/Croppr.js/issues"
   },
   "homepage": "https://github.com/jamesssooi/Croppr.js#readme",
+  "keywords": [
+    "image",
+    "cropper",
+    "cropping",
+    "crop",
+    "javascript",
+    "js",
+    "vanilla",
+    "native",
+    "croppr"
+  ],
   "devDependencies": {
     "babel-cli": "^6.18.0",
     "babel-preset-es2015": "^6.18.0",
