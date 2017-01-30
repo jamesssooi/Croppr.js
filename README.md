@@ -2,11 +2,11 @@
 
 ### A vanilla JavaScript image cropper that's lightweight, awesome, and has absolutely zero dependencies.
 
-* Lightweight (<5kb minified and gzipped)
+* Lightweight (<6kb minified and gzipped)
 * Made only with native, delicious vanilla JS
 * Zero dependencies
 
-[Try it out in the demo →](https://jamesssooi.github.io/Croppr.js)
+**[Try it out in the demo →](https://jamesssooi.github.io/Croppr.js)**
 
 ## Installation
 
