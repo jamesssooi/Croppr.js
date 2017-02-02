@@ -48,7 +48,6 @@
 .croppr-handle {
     border: 1px solid black;
     background-color: white;
-    /*border-radius: 30px 30px;*/
     width: 10px;
     height: 10px;
     position: absolute;

@@ -615,7 +615,7 @@ var CropprCore = function () {
             // Listen for events from children
             this.attachHandlerEvents();
             this.attachRegionEvents();
-            this.attachOverlayListeners();
+            this.attachOverlayEvents();
 
             // Bootstrap this cropper instance
             this.box = this.initializeBox(this.options);
@@ -742,7 +742,7 @@ var CropprCore = function () {
             this.regionEl.style.height = height + 'px';
 
             // Update clipped image element
-            this.imageClippedEl.style.clip = 'rect(' + y1 + 'px,\n                                               ' + x2 + 'px,\n                                               ' + y2 + 'px,\n                                               ' + x1 + 'px)';
+            this.imageClippedEl.style.clip = 'rect(' + y1 + 'px, ' + x2 + 'px, ' + y2 + 'px, ' + x1 + 'px)';
 
             // Update handle positions
             for (var i = 0; i < this.handles.length; i++) {
@@ -818,10 +818,11 @@ var CropprCore = function () {
          */
 
     }, {
-        key: 'attachOverlayListeners',
-        value: function attachOverlayListeners() {
+        key: 'attachOverlayEvents',
+        value: function attachOverlayEvents() {
             var SOUTHEAST_HANDLE_IDX = 4;
             var self = this;
+            var tmpBox = null;
             this.overlayEl.addEventListener('mousedown', onMouseDown);
 
             function onMouseDown(e) {
@@ -835,15 +836,17 @@ var CropprCore = function () {
                 var mouseY = e.clientY - container.top;
 
                 // Move box to mouse position
+                tmpBox = self.box;
                 self.box = new Box(mouseX, mouseY, mouseX + 1, mouseY + 1);
-                self.redraw();
 
                 // Activate the bottom right handle
                 self.eventBus.dispatchEvent(new CustomEvent('handlestart', {
                     detail: { handle: self.handles[SOUTHEAST_HANDLE_IDX] }
                 }));
+            }
 
-                // Simulate movement of handle to trigger constrains
+            function onMouseMove(e) {
+                e.stopPropagation();
                 self.eventBus.dispatchEvent(new CustomEvent('handlemove', {
                     detail: { mouseX: e.clientX, mouseY: e.clientY }
                 }));
@@ -853,13 +856,14 @@ var CropprCore = function () {
                 e.stopPropagation();
                 document.removeEventListener('mouseup', onMouseUp);
                 document.removeEventListener('mousemove', onMouseMove);
-            }
 
-            function onMouseMove(e) {
-                e.stopPropagation();
-                self.eventBus.dispatchEvent(new CustomEvent('handlemove', {
-                    detail: { mouseX: e.clientX, mouseY: e.clientY }
-                }));
+                // If the new box has no width and height, it suggests that
+                // the user had just clicked on an empty area and did not drag
+                // a new box (ie. an accidental click). In this scenario, we
+                // simply replace it with the previous box.
+                if (self.box.width() === 0 && self.box.height() === 0) {
+                    self.box = tmpBox;
+                }
             }
         }
 
@@ -988,7 +992,7 @@ var CropprCore = function () {
 
             // Finally, update the visuals (border, handles, clipped image, etc)
             this.box = box;
-            this.redraw(this.box);
+            this.redraw();
 
             // Call the callback
             if (this.options.onUpdate !== null) {
@@ -1058,7 +1062,7 @@ var CropprCore = function () {
             }
 
             // Update visuals
-            this.redraw(this.box);
+            this.redraw();
 
             // Call the callback
             if (this.options.onUpdate !== null) {
@@ -1187,27 +1191,6 @@ var CropprCore = function () {
                 returnMode = s;
             }
 
-            // Create function to force max and min sizes to respect aspect ratio.
-            // This function MUST BE CALLED if any of the max or min size values
-            // are updated.
-            var constrainValuesToRatio = function constrainValuesToRatio() {
-                if (this.aspectRatio === null) {
-                    return;
-                }
-
-                var ratio = this.aspectRatio;
-                var maxSize = this.maxSize,
-                    minSize = this.minSize;
-                if (maxSize.width !== null && maxSize.height !== null) {
-                    maxSize.width = maxSize.height * 1 / ratio;
-                }
-                if (minSize.width !== null && minSize.height !== null) {
-                    minSize.width = minSize.height * 1 / ratio;
-                }
-
-                return this;
-            };
-
             // Create function to convert % values to pixels
             var convertToPixels = function convertToPixels(container) {
                 var width = container.offsetWidth;
@@ -1242,8 +1225,7 @@ var CropprCore = function () {
                 returnMode: defaultValue(returnMode, defaults$$1.returnMode),
                 onUpdate: defaultValue(onUpdate, defaults$$1.onUpdate),
                 onInitialize: defaultValue(onInitialize, defaults$$1.onInitialize),
-                convertToPixels: convertToPixels,
-                constrainValuesToRatio: constrainValuesToRatio
+                convertToPixels: convertToPixels
             };
         }
     }]);
