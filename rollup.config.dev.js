@@ -1,5 +1,6 @@
 import json from 'rollup-plugin-json';
 import babel from 'rollup-plugin-babel';
+import cleanup from 'rollup-plugin-cleanup';
 
 var banner = `/**
  * Croppr.js
@@ -14,7 +15,13 @@ var banner = `/**
 
 export default {
   entry: 'src/index.js',
-  plugins: [ json(), babel() ],
+  plugins: [
+    json(),
+    babel(),
+    cleanup({
+      comments: 'jsdoc'
+    })
+  ],
   format: 'umd',
   moduleName: 'Croppr',
   dest: 'dist/croppr.js',

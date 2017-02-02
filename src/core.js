@@ -183,27 +183,42 @@ export default class CropprCore {
         const width = this.box.width(),
               height = this.box.height();
 
-        // Update region element
-        this.regionEl.style.left = x1 + 'px';
-        this.regionEl.style.top = y1 + 'px';
-        this.regionEl.style.width = width + 'px';
-        this.regionEl.style.height = height + 'px';
+        requestAnimationFrame(() => {
+            // Update region element
+            this.regionEl.style.left = x1 + 'px';
+            this.regionEl.style.top = y1 + 'px';
+            this.regionEl.style.width = width + 'px';
+            this.regionEl.style.height = height + 'px';
 
-        // Update clipped image element
-        this.imageClippedEl.style.clip = `rect(${y1}px, ${x2}px, ${y2}px, ${x1}px)`;
+            // Update clipped image element
+            this.imageClippedEl.style.clip = `rect(${y1}px, ${x2}px, ${y2}px, ${x1}px)`;
 
-        // Update handle positions
-        for (let i = 0; i < this.handles.length; i++) {
-            let handle = this.handles[i];
+            // Determine which handle to bring forward. The following code
+            // calculates the quadrant the box is in using bitwise operators.
+            // Reference: https://stackoverflow.com/questions/9718059
+            const center = this.box.getAbsolutePoint([.5, .5]);
+            const xSign = (center[0] - this.cropperEl.offsetWidth / 2) >> 31,
+                  ySign = (center[1] - this.cropperEl.offsetHeight / 2) >> 31;
+            const quadrant = (xSign ^ ySign) + ySign + ySign + 4;
+            
+            // The following equation calculates which handle index to bring
+            // forward. The equation is derived using algebra (if youre curious)
+            const foregroundHandleIndex = -2 * quadrant + 8
 
-            // Calculate handle position
-            const left = x1 + (width * handle.position[0]);
-            const top = y1 + (height * handle.position[1]);
+            // Update handle positions
+            for (let i = 0; i < this.handles.length; i++) {
+                let handle = this.handles[i];
 
-            // Apply new position
-            handle.el.style.left = left + 'px';
-            handle.el.style.top = top + 'px';
-        }
+                // Calculate handle position
+                const left = x1 + (width * handle.position[0]);
+                const top = y1 + (height * handle.position[1]);
+
+                // Apply new position
+                handle.el.style.left = left + 'px';
+                handle.el.style.top = top + 'px';
+                handle.el.style.zIndex = foregroundHandleIndex == i ? 5 : 4;
+            }
+        });
     }
 
     /**
@@ -633,3 +648,33 @@ export default class CropprCore {
 function round(value, decimals) {
   return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
 }
+
+/**
+ * POLYFILLS
+ */
+
+// Request Animation Frame Polyfill
+(function() {
+    var lastTime = 0;
+    var vendors = ['ms', 'moz', 'webkit', 'o'];
+    for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
+        window.requestAnimationFrame = window[vendors[x]+'RequestAnimationFrame'];
+        window.cancelAnimationFrame = window[vendors[x]+'CancelAnimationFrame']
+                                   || window[vendors[x]+'CancelRequestAnimationFrame'];
+    }
+ 
+    if (!window.requestAnimationFrame)
+        window.requestAnimationFrame = function(callback, element) {
+            var currTime = new Date().getTime();
+            var timeToCall = Math.max(0, 16 - (currTime - lastTime));
+            var id = window.setTimeout(function() { callback(currTime + timeToCall); },
+              timeToCall);
+            lastTime = currTime + timeToCall;
+            return id;
+        };
+ 
+    if (!window.cancelAnimationFrame)
+        window.cancelAnimationFrame = function(id) {
+            clearTimeout(id);
+        };
+}());

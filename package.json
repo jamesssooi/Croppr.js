@@ -43,6 +43,7 @@
     "onchange": "^3.2.1",
     "rollup": "^0.41.4",
     "rollup-plugin-babel": "^2.7.1",
+    "rollup-plugin-cleanup": "^1.0.0",
     "rollup-plugin-json": "^2.1.0",
     "rollup-plugin-uglify": "^1.0.1",
     "sinon": "^1.17.7"
