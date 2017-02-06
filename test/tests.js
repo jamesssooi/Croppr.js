@@ -9,21 +9,18 @@ var sinon = require('sinon');
 var chai = require('chai');
 var expect = chai.expect;
 var assert = chai.assert;
-var Croppr = require('../dist/croppr.js');
-
 
 /**
  * Create the fake html page.
  * Mock image size is 500x500.
  */
-jsdom({
-    html: fs.readFileSync('test/mock.html', 'utf-8'),
-    globalize: true,
+require('jsdom-global')(fs.readFileSync('test/mock.html', 'utf-8'), {
     features: {
         FetchExternalResources: ["script", "link", "img"],
         ProcessExternalResources: ["script", "img"]
     }
 });
+var Croppr = require('../dist/croppr.js');
 
 describe('Croppr', function() {
     beforeEach('setup fake dom', function() {
