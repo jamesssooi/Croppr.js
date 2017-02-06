@@ -2,8 +2,6 @@
 /**
  * Croppr.js unit tests
  */
-
-var jsdom = require('mocha-jsdom');
 var fs = require('fs');
 var sinon = require('sinon');
 var chai = require('chai');
