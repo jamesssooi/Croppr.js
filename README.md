@@ -68,7 +68,7 @@ var data = cropInstance.getValue();
 
 ## Options
 
-####**aspectRatio**
+#### **aspectRatio**
 
 Constrain the crop region to an aspect ratio.
 
