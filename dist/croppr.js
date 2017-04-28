@@ -15,25 +15,39 @@
 }(this, (function () { 'use strict';
 
 (function () {
-    var lastTime = 0;
-    var vendors = ['ms', 'moz', 'webkit', 'o'];
-    for (var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
-        window.requestAnimationFrame = window[vendors[x] + 'RequestAnimationFrame'];
-        window.cancelAnimationFrame = window[vendors[x] + 'CancelAnimationFrame'] || window[vendors[x] + 'CancelRequestAnimationFrame'];
-    }
-    if (!window.requestAnimationFrame) window.requestAnimationFrame = function (callback, element) {
-        var currTime = new Date().getTime();
-        var timeToCall = Math.max(0, 16 - (currTime - lastTime));
-        var id = window.setTimeout(function () {
-            callback(currTime + timeToCall);
-        }, timeToCall);
-        lastTime = currTime + timeToCall;
-        return id;
-    };
-    if (!window.cancelAnimationFrame) window.cancelAnimationFrame = function (id) {
-        clearTimeout(id);
-    };
+  var lastTime = 0;
+  var vendors = ['ms', 'moz', 'webkit', 'o'];
+  for (var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
+    window.requestAnimationFrame = window[vendors[x] + 'RequestAnimationFrame'];
+    window.cancelAnimationFrame = window[vendors[x] + 'CancelAnimationFrame'] || window[vendors[x] + 'CancelRequestAnimationFrame'];
+  }
+  if (!window.requestAnimationFrame) window.requestAnimationFrame = function (callback, element) {
+    var currTime = new Date().getTime();
+    var timeToCall = Math.max(0, 16 - (currTime - lastTime));
+    var id = window.setTimeout(function () {
+      callback(currTime + timeToCall);
+    }, timeToCall);
+    lastTime = currTime + timeToCall;
+    return id;
+  };
+  if (!window.cancelAnimationFrame) window.cancelAnimationFrame = function (id) {
+    clearTimeout(id);
+  };
 })();
+(function (window) {
+  try {
+    new CustomEvent('test');
+    return false;
+  } catch (e) {}
+  function MouseEvent(eventType, params) {
+    params = params || { bubbles: false, cancelable: false };
+    var mouseEvent = document.createEvent('MouseEvent');
+    mouseEvent.initMouseEvent(eventType, params.bubbles, params.cancelable, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+    return mouseEvent;
+  }
+  MouseEvent.prototype = Event.prototype;
+  window.MouseEvent = MouseEvent;
+})(window);
 
 var classCallCheck = function (instance, Constructor) {
   if (!(instance instanceof Constructor)) {
@@ -477,6 +491,38 @@ var Box = function () {
 }();
 
 /**
+ * Binds an element's touch events to be simulated as mouse events.
+ * @param {Element} element
+ */
+function enableTouch(element) {
+    element.addEventListener('touchstart', simulateMouseEvent);
+    element.addEventListener('touchend', simulateMouseEvent);
+    element.addEventListener('touchmove', simulateMouseEvent);
+}
+/**
+ * Translates a touch event to a mouse event.
+ * @param {Event} e
+ */
+function simulateMouseEvent(e) {
+    e.preventDefault();
+    var touch = e.changedTouches[0];
+    var eventMap = {
+        'touchstart': 'mousedown',
+        'touchmove': 'mousemove',
+        'touchend': 'mouseup'
+    };
+    touch.target.dispatchEvent(new MouseEvent(eventMap[e.type], {
+        bubbles: true,
+        cancelable: true,
+        view: window,
+        clientX: touch.clientX,
+        clientY: touch.clientY,
+        screenX: touch.screenX,
+        screenY: touch.screenY
+    }));
+}
+
+/**
  * Define a list of handles to create.
  *
  * @property {Array} position - The x and y ratio position of the handle within
@@ -535,6 +581,7 @@ var CropprCore = function () {
             this.containerEl = document.createElement('div');
             this.containerEl.className = 'croppr-container';
             this.eventBus = this.containerEl;
+            enableTouch(this.containerEl);
             this.cropperEl = document.createElement('div');
             this.cropperEl.className = 'croppr';
             this.imageEl = document.createElement('img');

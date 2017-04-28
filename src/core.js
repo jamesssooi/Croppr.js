@@ -5,6 +5,7 @@
 
 import Handle from './handle';
 import Box from './box';
+import enableTouch from './touch';
 
 /**
  * Define a list of handles to create.
@@ -68,7 +69,6 @@ export default class CropprCore {
 
         // Process option values
         this.options.convertToPixels(this.cropperEl);
-        //this.options.constrainValuesToRatio();
 
         // Listen for events from children
         this.attachHandlerEvents();
@@ -94,6 +94,7 @@ export default class CropprCore {
         this.containerEl = document.createElement('div');
         this.containerEl.className = 'croppr-container';
         this.eventBus = this.containerEl;
+        enableTouch(this.containerEl);
 
         // Create cropper element
         this.cropperEl = document.createElement('div');
@@ -408,7 +409,7 @@ export default class CropprCore {
             let isVerticalMovement = false;
             if (MULTI_AXIS) {
                 isVerticalMovement = (mouseY > box.y1 + ratio * box.width()) ||
-                                    (mouseY < box.y2 - ratio * box.width());
+                                     (mouseY < box.y2 - ratio * box.width());
             } else if (TOP_MOVABLE || BOTTOM_MOVABLE) {
                 isVerticalMovement = true;
             }

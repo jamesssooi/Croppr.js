@@ -2,7 +2,7 @@
  * POLYFILLS
  */
 
-// Request Animation Frame Polyfill
+// Request Animation Frame polyfill
 (function() {
     var lastTime = 0;
     var vendors = ['ms', 'moz', 'webkit', 'o'];
@@ -27,3 +27,26 @@
             clearTimeout(id);
         };
 }());
+
+// MouseEvents polyfill
+(function (window) {
+  try {
+    new CustomEvent('test');
+    return false; // No need to polyfill
+  } catch (e) {
+    // Need to polyfill - fall through
+  }
+
+  // Polyfills DOM4 CustomEvent
+  function MouseEvent(eventType, params) {
+    params = params || { bubbles: false, cancelable: false };
+    var mouseEvent = document.createEvent('MouseEvent');
+    mouseEvent.initMouseEvent(eventType, params.bubbles, params.cancelable, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+
+    return mouseEvent;
+  }
+
+  MouseEvent.prototype = Event.prototype;
+
+  window.MouseEvent = MouseEvent;
+})(window);
