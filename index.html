@@ -5,16 +5,33 @@
     <link rel="stylesheet" href="dist/croppr.css">
 </head>
 
+<style>
+.modal {
+    padding: 18px;
+    position: absolute;
+    border: 1px solid lightgrey;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 300px;
+}
+
+.modal img {
+    max-width: 100%;
+}
+</style>
+
 <body>
     <h1>Croppr.js</h1>
-    <img src="https://unsplash.it/500/500/?random" alt="" id="cropper">
+    <div class="modal">
+        <img src="https://unsplash.it/500/500/?random" alt="" id="cropper">
+    </div>
 
     <script>
         var croppr = new Croppr('#cropper', {
-            aspectRatio: 1.2,
+            //aspectRatio: 1.2,
             //maxSize: [150, 150],
             //minSize: [5, 5, 'px'],
-            //onUpdate: function(data) { console.log(data); },
+            onUpdate: function(data) { console.log(data); },
         });
     </script>
 </body>

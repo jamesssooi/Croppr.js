@@ -10,6 +10,7 @@
 
 .croppr-container img {
     vertical-align: middle;
+    max-width: 100%;
 }
 
 .croppr {
