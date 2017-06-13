@@ -1,6 +1,6 @@
 {
   "name": "croppr",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A vanilla JavaScript image cropper that's lightweight, awesome, and has absolutely zero dependencies.",
   "main": "dist/croppr.js",
   "scripts": {
