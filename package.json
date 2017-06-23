@@ -47,5 +47,8 @@
     "rollup-plugin-json": "^2.1.0",
     "rollup-plugin-uglify": "^1.0.1",
     "sinon": "^1.17.7"
+  },
+  "babel": {
+      "presets": ["es2015-rollup"]
   }
 }
