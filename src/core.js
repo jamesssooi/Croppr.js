@@ -316,7 +316,7 @@ export default class CropprCore {
             // the user had just clicked on an empty area and did not drag
             // a new box (ie. an accidental click). In this scenario, we
             // simply replace it with the previous box.
-            if (self.box.width() === 0 && self.box.height() === 0) {
+            if (self.box.width() === 1 && self.box.height() === 1) {
                 self.box = tmpBox;
             }
         }
