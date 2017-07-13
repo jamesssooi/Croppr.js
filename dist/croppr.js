@@ -656,8 +656,7 @@ var CropprCore = function () {
             var width = this.box.width(),
                 height = this.box.height();
             window.requestAnimationFrame(function () {
-                _this2.regionEl.style.left = x1 + 'px';
-                _this2.regionEl.style.top = y1 + 'px';
+                _this2.regionEl.style.transform = 'translate(' + Math.round(x1) + 'px, ' + Math.round(y1) + 'px)';
                 _this2.regionEl.style.width = width + 'px';
                 _this2.regionEl.style.height = height + 'px';
                 _this2.imageClippedEl.style.clip = 'rect(' + y1 + 'px, ' + x2 + 'px, ' + y2 + 'px, ' + x1 + 'px)';
@@ -668,10 +667,11 @@ var CropprCore = function () {
                 var foregroundHandleIndex = -2 * quadrant + 8;
                 for (var i = 0; i < _this2.handles.length; i++) {
                     var handle = _this2.handles[i];
-                    var left = x1 + width * handle.position[0];
-                    var top = y1 + height * handle.position[1];
-                    handle.el.style.left = left + 'px';
-                    handle.el.style.top = top + 'px';
+                    var handleWidth = handle.el.offsetWidth;
+                    var handleHeight = handle.el.offsetHeight;
+                    var left = x1 + width * handle.position[0] - handleWidth / 2;
+                    var top = y1 + height * handle.position[1] - handleHeight / 2;
+                    handle.el.style.transform = 'translate(' + Math.round(left) + 'px, ' + Math.round(top) + 'px)';
                     handle.el.style.zIndex = foregroundHandleIndex == i ? 5 : 4;
                 }
             });

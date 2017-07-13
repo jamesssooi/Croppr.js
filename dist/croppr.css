@@ -34,6 +34,7 @@
     position: absolute;
     z-index: 3;
     cursor: move;
+    top: 0;
 }
 
 .croppr-imageClipped {
@@ -53,8 +54,5 @@
     height: 10px;
     position: absolute;
     z-index: 4;
-    transform: translate(-50%, -50%);
-    -moz-transform: translate(-50%, -50%);
-    -webkit-transform: translate(-50%, -50%);
-    -ms-transform: translate(-50%, -50%);
+    top: 0;
 }
