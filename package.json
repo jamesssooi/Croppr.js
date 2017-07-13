@@ -1,6 +1,6 @@
 {
   "name": "croppr",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "description": "A vanilla JavaScript image cropper that's lightweight, awesome, and has absolutely zero dependencies.",
   "main": "dist/croppr.js",
   "scripts": {
@@ -49,6 +49,8 @@
     "sinon": "^1.17.7"
   },
   "babel": {
-      "presets": ["es2015-rollup"]
+    "presets": [
+      "es2015-rollup"
+    ]
   }
 }

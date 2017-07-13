@@ -740,7 +740,7 @@ var CropprCore = function () {
                 e.stopPropagation();
                 document.removeEventListener('mouseup', onMouseUp);
                 document.removeEventListener('mousemove', onMouseMove);
-                if (self.box.width() === 0 && self.box.height() === 0) {
+                if (self.box.width() === 1 && self.box.height() === 1) {
                     self.box = tmpBox;
                 }
             }
