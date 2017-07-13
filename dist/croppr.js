@@ -648,15 +648,14 @@ var CropprCore = function () {
         key: 'redraw',
         value: function redraw() {
             var _this2 = this;
-            var _box = this.box,
-                x1 = _box.x1,
-                x2 = _box.x2,
-                y1 = _box.y1,
-                y2 = _box.y2;
             var width = this.box.width(),
                 height = this.box.height();
+            var x1 = Math.round(this.box.x1),
+                y1 = Math.round(this.box.y1),
+                x2 = Math.round(this.box.x2),
+                y2 = Math.round(this.box.y2);
             window.requestAnimationFrame(function () {
-                _this2.regionEl.style.transform = 'translate(' + Math.round(x1) + 'px, ' + Math.round(y1) + 'px)';
+                _this2.regionEl.style.transform = 'translate(' + x1 + 'px, ' + y1 + 'px)';
                 _this2.regionEl.style.width = width + 'px';
                 _this2.regionEl.style.height = height + 'px';
                 _this2.imageClippedEl.style.clip = 'rect(' + y1 + 'px, ' + x2 + 'px, ' + y2 + 'px, ' + x1 + 'px)';
