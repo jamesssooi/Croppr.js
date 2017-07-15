@@ -648,9 +648,9 @@ var CropprCore = function () {
         key: 'redraw',
         value: function redraw() {
             var _this2 = this;
-            var width = this.box.width(),
-                height = this.box.height();
-            var x1 = Math.round(this.box.x1),
+            var width = Math.round(this.box.width()),
+                height = Math.round(this.box.height()),
+                x1 = Math.round(this.box.x1),
                 y1 = Math.round(this.box.y1),
                 x2 = Math.round(this.box.x2),
                 y2 = Math.round(this.box.y2);

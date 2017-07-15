@@ -180,15 +180,14 @@ export default class CropprCore {
      * Draw visuals (border, handles, etc) for the current box.
      */
     redraw() {
-        const width = this.box.width(),
-              height = this.box.height();
-
         // Round positional values to prevent subpixel coordinates, which can
         // result in element that is rendered blurly
-        const x1 = Math.round(this.box.x1),
-              y1 = Math.round(this.box.y1),
-              x2 = Math.round(this.box.x2),
-              y2 = Math.round(this.box.y2);
+        const  width = Math.round(this.box.width()),
+              height = Math.round(this.box.height()),
+                  x1 = Math.round(this.box.x1),
+                  y1 = Math.round(this.box.y1),
+                  x2 = Math.round(this.box.x2),
+                  y2 = Math.round(this.box.y2);
 
         window.requestAnimationFrame(() => {
             // Update region element
