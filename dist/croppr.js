@@ -681,14 +681,17 @@ var CropprCore = function () {
             var eventBus = this.eventBus;
             eventBus.addEventListener('handlestart', this.onHandleMoveStart.bind(this));
             eventBus.addEventListener('handlemove', this.onHandleMoveMoving.bind(this));
+            eventBus.addEventListener('handleend', this.onHandleMoveEnd.bind(this));
         }
     }, {
         key: 'attachRegionEvents',
         value: function attachRegionEvents() {
             var eventBus = this.eventBus;
+            var self = this;
             this.regionEl.addEventListener('mousedown', onMouseDown);
             eventBus.addEventListener('regionstart', this.onRegionMoveStart.bind(this));
             eventBus.addEventListener('regionmove', this.onRegionMoveMoving.bind(this));
+            eventBus.addEventListener('regionend', this.onRegionMoveEnd.bind(this));
             function onMouseDown(e) {
                 e.stopPropagation();
                 document.addEventListener('mouseup', onMouseUp);
@@ -697,14 +700,17 @@ var CropprCore = function () {
                     detail: { mouseX: e.clientX, mouseY: e.clientY }
                 }));
             }
+            function onMouseMove(e) {
+                e.stopPropagation();
+                eventBus.dispatchEvent(new CustomEvent('regionmove', {
+                    detail: { mouseX: e.clientX, mouseY: e.clientY }
+                }));
+            }
             function onMouseUp(e) {
                 e.stopPropagation();
                 document.removeEventListener('mouseup', onMouseUp);
                 document.removeEventListener('mousemove', onMouseMove);
-            }
-            function onMouseMove(e) {
-                e.stopPropagation();
-                eventBus.dispatchEvent(new CustomEvent('regionmove', {
+                eventBus.dispatchEvent(new CustomEvent('regionend', {
                     detail: { mouseX: e.clientX, mouseY: e.clientY }
                 }));
             }
@@ -741,7 +747,11 @@ var CropprCore = function () {
                 document.removeEventListener('mousemove', onMouseMove);
                 if (self.box.width() === 1 && self.box.height() === 1) {
                     self.box = tmpBox;
+                    return;
                 }
+                self.eventBus.dispatchEvent(new CustomEvent('handleend', {
+                    detail: { mouseX: e.clientX, mouseY: e.clientY }
+                }));
             }
         }
     }, {
@@ -754,6 +764,9 @@ var CropprCore = function () {
                 originX = _box$getAbsolutePoint2[0],
                 originY = _box$getAbsolutePoint2[1];
             this.activeHandle = { handle: handle, originPoint: originPoint, originX: originX, originY: originY };
+            if (this.options.onCropStart !== null) {
+                this.options.onCropStart(this.getValue());
+            }
         }
     }, {
         key: 'onHandleMoveMoving',
@@ -827,8 +840,15 @@ var CropprCore = function () {
             box.constrainToBoundary(parentWidth, parentHeight, origin);
             this.box = box;
             this.redraw();
-            if (this.options.onUpdate !== null) {
-                this.options.onUpdate(this.getValue());
+            if (this.options.onCropMove !== null) {
+                this.options.onCropMove(this.getValue());
+            }
+        }
+    }, {
+        key: 'onHandleMoveEnd',
+        value: function onHandleMoveEnd(e) {
+            if (this.options.onCropEnd !== null) {
+                this.options.onCropEnd(this.getValue());
             }
         }
     }, {
@@ -844,6 +864,9 @@ var CropprCore = function () {
                 offsetX: mouseX - this.box.x1,
                 offsetY: mouseY - this.box.y1
             };
+            if (this.options.onCropStart !== null) {
+                this.options.onCropStart(this.getValue());
+            }
         }
     }, {
         key: 'onRegionMoveMoving',
@@ -871,8 +894,15 @@ var CropprCore = function () {
                 this.box.move(null, container.height - this.box.height());
             }
             this.redraw();
-            if (this.options.onUpdate !== null) {
-                this.options.onUpdate(this.getValue());
+            if (this.options.onCropMove !== null) {
+                this.options.onCropMove(this.getValue());
+            }
+        }
+    }, {
+        key: 'onRegionMoveEnd',
+        value: function onRegionMoveEnd(e) {
+            if (this.options.onCropEnd !== null) {
+                this.options.onCropEnd(this.getValue());
             }
         }
     }, {
@@ -921,7 +951,9 @@ var CropprCore = function () {
                 startSize: { width: 100, height: 100, unit: '%' },
                 returnMode: 'real',
                 onInitialize: null,
-                onUpdate: null
+                onCropStart: null,
+                onCropMove: null,
+                onCropEnd: null
             };
             var aspectRatio = null;
             if (opts.aspectRatio !== undefined) {
@@ -955,13 +987,25 @@ var CropprCore = function () {
                     unit: opts.startSize[2] || '%'
                 };
             }
-            var onUpdate = null;
-            if (typeof opts.onUpdate === 'function') {
-                onUpdate = opts.onUpdate;
-            }
             var onInitialize = null;
             if (typeof opts.onInitialize === 'function') {
                 onInitialize = opts.onInitialize;
+            }
+            var onCropStart = null;
+            if (typeof opts.onCropStart === 'function') {
+                onCropStart = opts.onCropStart;
+            }
+            var onCropEnd = null;
+            if (typeof opts.onCropEnd === 'function') {
+                onCropEnd = opts.onCropEnd;
+            }
+            var onCropMove = null;
+            if (typeof opts.onUpdate === 'function') {
+                console.warn('Croppr.js: `onUpdate` is deprecated and will be removed in the next major release. Please use `onCropMove` or `onCropEnd` instead.');
+                onCropMove = opts.onUpdate;
+            }
+            if (typeof opts.onCropMove === 'function') {
+                onCropMove = opts.onCropMove;
             }
             var returnMode = null;
             if (opts.returnMode !== undefined) {
@@ -999,8 +1043,10 @@ var CropprCore = function () {
                 minSize: defaultValue(minSize, defaults$$1.minSize),
                 startSize: defaultValue(startSize, defaults$$1.startSize),
                 returnMode: defaultValue(returnMode, defaults$$1.returnMode),
-                onUpdate: defaultValue(onUpdate, defaults$$1.onUpdate),
                 onInitialize: defaultValue(onInitialize, defaults$$1.onInitialize),
+                onCropStart: defaultValue(onCropStart, defaults$$1.onCropStart),
+                onCropMove: defaultValue(onCropMove, defaults$$1.onCropMove),
+                onCropEnd: defaultValue(onCropEnd, defaults$$1.onCropEnd),
                 convertToPixels: convertToPixels
             };
         }
@@ -1042,8 +1088,8 @@ var Croppr$1 = function (_CropprCore) {
         value: function moveTo(x, y) {
             this.box.move(x, y);
             this.redraw();
-            if (this.options.onUpdate !== null) {
-                this.options.onUpdate(this.getValue());
+            if (this.options.onCropEnd !== null) {
+                this.options.onCropEnd(this.getValue());
             }
             return this;
         }
@@ -1060,8 +1106,8 @@ var Croppr$1 = function (_CropprCore) {
             var origin = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [.5, .5];
             this.box.resize(width, height, origin);
             this.redraw();
-            if (this.options.onUpdate !== null) {
-                this.options.onUpdate(this.getValue());
+            if (this.options.onCropEnd !== null) {
+                this.options.onCropEnd(this.getValue());
             }
             return this;
         }
@@ -1077,8 +1123,8 @@ var Croppr$1 = function (_CropprCore) {
             var origin = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [.5, .5];
             this.box.scale(factor, origin);
             this.redraw();
-            if (this.options.onUpdate !== null) {
-                this.options.onUpdate(this.getValue());
+            if (this.options.onCropEnd !== null) {
+                this.options.onCropEnd(this.getValue());
             }
             return this;
         }
@@ -1087,8 +1133,8 @@ var Croppr$1 = function (_CropprCore) {
         value: function reset() {
             this.box = this.initializeBox(this.options);
             this.redraw();
-            if (this.options.onUpdate !== null) {
-                this.options.onUpdate(this.getValue());
+            if (this.options.onCropEnd !== null) {
+                this.options.onCropEnd(this.getValue());
             }
             return this;
         }
