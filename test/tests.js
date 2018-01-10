@@ -251,25 +251,37 @@ describe('Croppr behaviour', function() {
             assert.isTrue(spy.calledOnce);
         });
 
-        it('should call the onUpdate callback', function() {
+        it('should trigger all onCrop callbacks via moving handles', function() {
             let instance = createMockCroppr({
-                onUpdate: function() { return; }
+                onCropStart: function() { return; },
+                onCropMove: function() { return; },
+                onCropEnd: function() { return; }
             });
-            let spy = sinon.spy(instance.options, 'onUpdate');
+            let onCropStartSpy = sinon.spy(instance.options, 'onCropStart');
+            let onCropMoveSpy = sinon.spy(instance.options, 'onCropMove');
+            let onCropEndSpy = sinon.spy(instance.options, 'onCropEnd');
             
             // Simulate handle resize
             const handle = {constraints: [0, 1, 1, 0], position: [1, 1]};
             simulateHandleMove(instance, handle, 250, 250);
 
+            assert.isTrue(onCropStartSpy.called && onCropMoveSpy.called && onCropEndSpy.called);
+        });
+
+        it('should trigger all onCrop callbacks via moving region', function() {
+            let instance = createMockCroppr({
+                onCropStart: function() { return; },
+                onCropMove: function() { return; },
+                onCropEnd: function() { return; }
+            });
+            let onCropStartSpy = sinon.spy(instance.options, 'onCropStart');
+            let onCropMoveSpy = sinon.spy(instance.options, 'onCropMove');
+            let onCropEndSpy = sinon.spy(instance.options, 'onCropEnd');
+
             // Simulate region move
             simulateRegionMove(instance, 0, 0, 250, 250);
 
-            // Simulate API methods
-            instance.moveTo(0, 0);
-            instance.resizeTo(50, 50);
-            instance.scaleBy(2, [0, 0]);
-
-            assert.equal(spy.callCount, 5);
+            assert.isTrue(onCropStartSpy.called && onCropMoveSpy.called && onCropEndSpy.called);
         });
     });
 });
@@ -320,28 +332,35 @@ function createMockCroppr(options, _deferred) {
 }
 
 function simulateHandleMove(instance, handle, mouseX, mouseY) {
-    // Set active handle
-    const originPoint = [1 - handle.position[0], 1 - handle.position[1]];
-    let originX = instance.box.getAbsolutePoint(originPoint)[0];
-    let originY = instance.box.getAbsolutePoint(originPoint)[1];
-    instance.activeHandle = {handle, originPoint, originX, originY}
+    // Simulate handle start
+    instance.eventBus.dispatchEvent(new CustomEvent('handlestart', {
+        detail: { handle: handle }
+    }));
 
-    // Simulate movement
-    instance.onHandleMoveMoving({
+    // Simulate handle move
+    instance.eventBus.dispatchEvent(new CustomEvent('handlemove', {
         detail: {mouseX: mouseX, mouseY: mouseY}
-    });
+    }));
+
+    // Simulate handle end
+    instance.eventBus.dispatchEvent(new CustomEvent('handleend', {
+        detail: {mouseX: mouseX, mouseY: mouseY}
+    }));
 }
 
 function simulateRegionMove(instance, originX, originY, toX, toY) {
-    // Set current move
-    let container = instance.cropperEl.getBoundingClientRect();
-    instance.currentMove = {
-        offsetX: originX - instance.box.x1,
-        offsetY: originY - instance.box.y1
-    }
+    // Simulate region movement start
+    instance.eventBus.dispatchEvent(new CustomEvent('regionstart', {
+        detail: { mouseX: originX, mouseY: originY }
+    }));
 
-    // Simulate movement
-    instance.onRegionMoveMoving({
-        detail: {mouseX: toX, mouseY: toY}
-    });
+    // Simulate region movement
+    instance.eventBus.dispatchEvent(new CustomEvent('regionmove', {
+        detail: { mouseX: toX, mouseY: toY }
+    }));
+    
+    // Simulate region movement end
+    instance.eventBus.dispatchEvent(new CustomEvent('regionend', {
+        detail: { mouseX: toX, mouseY: toY }
+    }));
 }
