@@ -541,12 +541,14 @@ export default class CropprCore {
     static parseOptions(opts) {
         const defaults = {
             aspectRatio: null,
-            maxSize: {width: null, height: null},
-            minSize: {width: null, height: null},
-            startSize: {width: 100, height: 100, unit: '%'},
+            maxSize: { width: null, height: null },
+            minSize: { width: null, height: null },
+            startSize: { width: 100, height: 100, unit: '%' },
             returnMode: 'real',
             onInitialize: null,
-            onUpdate: null
+            onCropStart: null,
+            onCropMove: null,
+            onCropEnd: null,
         }
         
         // Parse aspect ratio
@@ -589,16 +591,31 @@ export default class CropprCore {
             }
         }
 
-        // Parse onUpdate callback
-        let onUpdate = null;
-        if (typeof opts.onUpdate === 'function') {
-            onUpdate = opts.onUpdate;
-        }
-
-        // Parse onInitialize callback
+        // Parse callbacks
         let onInitialize = null;
         if (typeof opts.onInitialize === 'function') {
             onInitialize = opts.onInitialize;
+        }
+
+        let onCropStart = null;
+        if (typeof opts.onCropStart === 'function') {
+            onCropStart = opts.onCropStart;
+        }
+
+        let onCropEnd = null;
+        if (typeof opts.onCropEnd === 'function') {
+            onCropEnd = opts.onCropEnd;
+        }
+
+        let onCropMove = null;
+        if (typeof opts.onUpdate === 'function') {
+            // DEPRECATED: onUpdate is deprecated to create a more uniform
+            // callback API, such as: onCropStart, onCropMove, onCropEnd
+            console.warn('Croppr.js: `onUpdate` is deprecated and will be removed in the next major release. Please use `onCropMove` or `onCropEnd` instead.');
+            onCropMove = opts.onUpdate;
+        }
+        if (typeof opts.onCropMove === 'function') {
+            onCropMove = opts.onCropMove;
         }
 
         // Parse returnMode value
@@ -641,8 +658,10 @@ export default class CropprCore {
             minSize: defaultValue(minSize, defaults.minSize),
             startSize: defaultValue(startSize, defaults.startSize),
             returnMode: defaultValue(returnMode, defaults.returnMode),
-            onUpdate: defaultValue(onUpdate, defaults.onUpdate),
             onInitialize: defaultValue(onInitialize, defaults.onInitialize),
+            onCropStart: defaultValue(onCropStart, defaults.onCropStart),
+            onCropMove: defaultValue(onCropMove, defaults.onCropMove),
+            onCropEnd: defaultValue(onCropEnd, defaults.onCropEnd),
             convertToPixels: convertToPixels
         }
     }
