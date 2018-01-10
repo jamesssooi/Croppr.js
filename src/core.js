@@ -236,6 +236,7 @@ export default class CropprCore {
         const eventBus = this.eventBus;
         eventBus.addEventListener('handlestart', this.onHandleMoveStart.bind(this));
         eventBus.addEventListener('handlemove', this.onHandleMoveMoving.bind(this));
+        eventBus.addEventListener('handleend', this.onHandleMoveEnd.bind(this));
     }
 
     /**
@@ -244,10 +245,12 @@ export default class CropprCore {
      */
     attachRegionEvents() {
         const eventBus = this.eventBus;
+        const self = this;
 
         this.regionEl.addEventListener('mousedown', onMouseDown);
         eventBus.addEventListener('regionstart', this.onRegionMoveStart.bind(this));
         eventBus.addEventListener('regionmove', this.onRegionMoveMoving.bind(this));
+        eventBus.addEventListener('regionend', this.onRegionMoveEnd.bind(this));
 
         function onMouseDown(e) {
             e.stopPropagation();
@@ -260,17 +263,22 @@ export default class CropprCore {
             }));
         }
 
-        function onMouseUp(e) {
-            e.stopPropagation();
-            document.removeEventListener('mouseup', onMouseUp);
-            document.removeEventListener('mousemove', onMouseMove);
-        }
-
         function onMouseMove(e) {
             e.stopPropagation();
 
             // Notify parent
             eventBus.dispatchEvent(new CustomEvent('regionmove', {
+                detail: {mouseX: e.clientX, mouseY: e.clientY}
+            }));
+        }
+
+        function onMouseUp(e) {
+            e.stopPropagation();
+            document.removeEventListener('mouseup', onMouseUp);
+            document.removeEventListener('mousemove', onMouseMove);
+
+            // Notify parent
+            eventBus.dispatchEvent(new CustomEvent('regionend', {
                 detail: {mouseX: e.clientX, mouseY: e.clientY}
             }));
         }
@@ -296,7 +304,7 @@ export default class CropprCore {
             const mouseX = e.clientX - container.left;
             const mouseY = e.clientY - container.top;
 
-            // Move box to mouse position
+            // Create new box at mouse position
             tmpBox = self.box;
             self.box = new Box(mouseX, mouseY, mouseX + 1, mouseY + 1);
             
@@ -324,7 +332,12 @@ export default class CropprCore {
             // simply replace it with the previous box.
             if (self.box.width() === 1 && self.box.height() === 1) {
                 self.box = tmpBox;
+                return;
             }
+
+            self.eventBus.dispatchEvent(new CustomEvent('handleend', {
+                detail: {mouseX: e.clientX, mouseY: e.clientY}
+            }));
         }
 
     }
@@ -342,6 +355,11 @@ export default class CropprCore {
         let [originX, originY] = this.box.getAbsolutePoint(originPoint);
         
         this.activeHandle = {handle, originPoint, originX, originY}
+
+        // Trigger callback
+        if (this.options.onCropStart !== null) {
+            this.options.onCropStart(this.getValue());
+        }
     }
 
     /**
@@ -438,9 +456,20 @@ export default class CropprCore {
         this.box = box;
         this.redraw();
 
-        // Call the callback
-        if (this.options.onUpdate !== null) {
-            this.options.onUpdate(this.getValue());
+        // Trigger callback
+        if (this.options.onCropMove !== null) {
+            this.options.onCropMove(this.getValue());
+        }
+    }
+
+    /**
+     * EVENT HANDLER
+     * Executes on handle move end.
+     */
+    onHandleMoveEnd(e) {
+        // Trigger callback
+        if (this.options.onCropEnd !== null) {
+            this.options.onCropEnd(this.getValue());
         }
     }
 
@@ -459,6 +488,11 @@ export default class CropprCore {
         this.currentMove = {
             offsetX: mouseX - this.box.x1,
             offsetY: mouseY - this.box.y1
+        }
+
+        // Trigger callback
+        if (this.options.onCropStart !== null) {
+            this.options.onCropStart(this.getValue());
         }
     }
 
@@ -494,11 +528,23 @@ export default class CropprCore {
         // Update visuals
         this.redraw();
 
-        // Call the callback
-        if (this.options.onUpdate !== null) {
-            this.options.onUpdate(this.getValue());
+        // Trigger callback
+        if (this.options.onCropMove !== null) {
+            this.options.onCropMove(this.getValue());
         }
     }
+
+    /**
+     * EVENT HANDLER
+     * Executes when user stops moving the crop region (mouse up).
+     */
+    onRegionMoveEnd(e) {
+        // Trigger callback
+        if (this.options.onCropEnd !== null) {
+            this.options.onCropEnd(this.getValue());
+        }
+    }
+
 
     /**
      * Calculate the value of the crop region.
