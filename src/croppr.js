@@ -43,8 +43,8 @@ export default class Croppr extends CropprCore {
         this.redraw();
         
         // Call the callback
-        if (this.options.onUpdate !== null) {
-            this.options.onUpdate(this.getValue());
+        if (this.options.onCropEnd !== null) {
+            this.options.onCropEnd(this.getValue());
         }
         return this;
     }
@@ -61,8 +61,8 @@ export default class Croppr extends CropprCore {
         this.redraw();
 
         // Call the callback
-        if (this.options.onUpdate !== null) {
-            this.options.onUpdate(this.getValue());
+        if (this.options.onCropEnd !== null) {
+            this.options.onCropEnd(this.getValue());
         }
         return this;
     }
@@ -78,8 +78,8 @@ export default class Croppr extends CropprCore {
         this.redraw();
 
         // Call the callback
-        if (this.options.onUpdate !== null) {
-            this.options.onUpdate(this.getValue());
+        if (this.options.onCropEnd !== null) {
+            this.options.onCropEnd(this.getValue());
         }
         return this;
     }
@@ -92,8 +92,8 @@ export default class Croppr extends CropprCore {
         this.redraw();
 
         // Call the callback
-        if (this.options.onUpdate !== null) {
-            this.options.onUpdate(this.getValue());
+        if (this.options.onCropEnd !== null) {
+            this.options.onCropEnd(this.getValue());
         }
         return this;
     }

@@ -28,10 +28,10 @@
 
     <script>
         var croppr = new Croppr('#cropper', {
-            //aspectRatio: 1.2,
-            //maxSize: [150, 150],
-            //minSize: [5, 5, 'px'],
-            //onUpdate: function(data) { console.log(data); },
+            onInitialize: (instance) => { console.log(instance); },
+            onCropStart: (data) => { console.log('start', data); },
+            onCropEnd: (data) => { console.log('end', data); },
+            onCropMove: (data) => { console.log('move', data); }
         });
     </script>
 </body>

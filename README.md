@@ -115,15 +115,41 @@ _Note: `unit` accepts a value of **'px'** or **'%'**. Defaults to **'%'**._
 
 
 
-#### **onUpdate**
+#### **onCropStart**
 
-A callback function that is called when the crop region is updated.
+A callback function that is called when the user starts modifying the crop region.
 
 * Type: `Function`
 * Arguments: `data = {x, y, width, height}`
 * Example:
 ```javascript
-onUpdate: function(data) {
+onCropStart: function(data) {
+  console.log(data.x, data.y, data.width, data.height);
+}
+```
+
+#### **onCropMove**
+
+A callback function that is called when the crop region changes.
+
+* Type: `Function`
+* Arguments: `data = {x, y, width, height}`
+* Example:
+```javascript
+onCropMove: function(data) {
+  console.log(data.x, data.y, data.width, data.height);
+}
+```
+
+#### **onCropEnd**
+
+A callback function that is called when the user stops modifying the crop region.
+
+* Type: `Function`
+* Arguments: `data = {x, y, width, height}`
+* Example:
+```javascript
+onCropEnd: function(data) {
   console.log(data.x, data.y, data.width, data.height);
 }
 ```
