@@ -258,15 +258,39 @@ body
                   li Example: <code>startSize: [50, 50]</code> (A starting crop region of 50% of the image size)
                 p Note: <code>unit</code> accepts a value of 'px' or '%'. Defaults to '%'.
             tr.content.option
-              td.options-tbl__option-td onUpdate
+              td.options-tbl__option-td onCropStart
               td
-                p.option__desc A callback function that is called when the crop region is updated.
+                p.option__desc A callback function that is called when the user starts modifying the crop region.
+                ul
+                  li Type: <code>Function</code>
+                  li Arguments: <code>value = {x, y, width, height}</code>
+                  li Example:
+                    pre.code.prettyprint.lang-js.
+                      onCropStart: function(value) {
+                        console.log(value.x, value.y, value.width, value.height);
+                      }
+            tr.content.option
+              td.options-tbl__option-td onCropMove
+              td
+                p.option__desc A callback function that is called when the crop region changes.
                 ul
                   li Type: <code>Function</code>
                   li Arguments: <code>value = {x, y, width, height}</code>
                   li Example:
                     pre.code.prettyprint.lang-js.
                       onUpdate: function(value) {
+                        console.log(value.x, value.y, value.width, value.height);
+                      }
+            tr.content.option
+              td.options-tbl__option-td onCropEnd
+              td
+                p.option__desc A callback function that is called when the user stops modifying the crop region.
+                ul
+                  li Type: <code>Function</code>
+                  li Arguments: <code>value = {x, y, width, height}</code>
+                  li Example:
+                    pre.code.prettyprint.lang-js.
+                      onCropEnd: function(value) {
                         console.log(value.x, value.y, value.width, value.height);
                       }
             tr.content.option

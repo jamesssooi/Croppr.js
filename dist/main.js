@@ -13,7 +13,7 @@ window.onload = function () {
     // Create Croppr instance
     var croppr = new Croppr('#croppr', {
         startSize: [80, 80, '%'],
-        onUpdate: function onUpdate(value) {
+        onCropMove: function onCropMove(value) {
             updateValue(value.x, value.y, value.width, value.height);
         }
     });
@@ -166,10 +166,9 @@ function handleChange(croppr, option, elements) {
             width: Number(values[0]),
             height: Number(values[1]),
             unit: values[2]
-        };
 
-        // Convert to pixels
-        if (values[2] === '%') {
+            // Convert to pixels
+        };if (values[2] === '%') {
             croppr.options.convertToPixels(croppr.cropperEl);
         }
 

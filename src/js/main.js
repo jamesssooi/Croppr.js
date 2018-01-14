@@ -11,7 +11,7 @@ window.onload = function() {
     // Create Croppr instance
     let croppr = new Croppr('#croppr', {
         startSize: [80, 80, '%'],
-        onUpdate: value => {
+        onCropMove: value => {
             updateValue(value.x, value.y, value.width, value.height);
         }
     });
