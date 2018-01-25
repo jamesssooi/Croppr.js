@@ -560,21 +560,24 @@ var CropprCore = function () {
             throw 'Image src not provided.';
         }
         this._initialized = false;
-        this._targetEl = element;
+        this._restore = {
+            parent: element.parentNode,
+            element: element
+        };
         if (!deferred) {
             if (element.width === 0 || element.height === 0) {
                 element.onload = function () {
-                    _this.initialize();
+                    _this.initialize(element);
                 };
             } else {
-                this.initialize();
+                this.initialize(element);
             }
         }
     }
     createClass(CropprCore, [{
         key: 'initialize',
-        value: function initialize() {
-            this.createDOM(this._targetEl);
+        value: function initialize(element) {
+            this.createDOM(element);
             this.options.convertToPixels(this.cropperEl);
             this.attachHandlerEvents();
             this.attachRegionEvents();
@@ -620,6 +623,11 @@ var CropprCore = function () {
             this.cropperEl.appendChild(handleContainerEl);
             this.containerEl.appendChild(this.cropperEl);
             targetEl.parentElement.replaceChild(this.containerEl, targetEl);
+        }
+    }, {
+        key: 'destroy',
+        value: function destroy() {
+            this._restore.parent.replaceChild(this._restore.element, this.containerEl);
         }
         /**
          * Create a new box region with a set of options.
@@ -1077,6 +1085,11 @@ var Croppr$1 = function (_CropprCore) {
         key: 'getValue',
         value: function getValue(mode) {
             return get(Croppr.prototype.__proto__ || Object.getPrototypeOf(Croppr.prototype), 'getValue', this).call(this, mode);
+        }
+    }, {
+        key: 'destroy',
+        value: function destroy() {
+            return get(Croppr.prototype.__proto__ || Object.getPrototypeOf(Croppr.prototype), 'destroy', this).call(this);
         }
         /**
          * Moves the crop region to a specified coordinate.
