@@ -34,6 +34,13 @@ export default class Croppr extends CropprCore {
     }
 
     /**
+     * Destroys the Croppr instance
+     */
+    destroy() {
+        return super.destroy();
+    }
+
+    /**
      * Moves the crop region to a specified coordinate.
      * @param {Number} x
      * @param {Number} y
