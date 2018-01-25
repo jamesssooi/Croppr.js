@@ -48,14 +48,17 @@ export default class CropprCore {
 
         // Define internal props
         this._initialized = false;
-        this._targetEl = element;
+        this._restore = {
+            parent: element.parentNode,
+            element: element
+        }
 
         // Wait until image is loaded before proceeding
         if (!deferred) {
             if (element.width === 0 || element.height === 0) {
-                element.onload = () => { this.initialize(); }
+                element.onload = () => { this.initialize(element); }
             } else {
-                this.initialize();
+                this.initialize(element);
             }
         }
     }
@@ -63,9 +66,9 @@ export default class CropprCore {
     /**
      * Initialize the Croppr instance
      */
-    initialize() {
+    initialize(element) {
         // Create DOM elements
-        this.createDOM(this._targetEl);
+        this.createDOM(element);
 
         // Process option values
         this.options.convertToPixels(this.cropperEl);
@@ -141,6 +144,13 @@ export default class CropprCore {
 
         // And then finally insert it into the document
         targetEl.parentElement.replaceChild(this.containerEl, targetEl);
+    }
+
+    /**
+     * Destroy the Croppr instance and replace with the original element.
+     */
+    destroy() {
+        this._restore.parent.replaceChild(this._restore.element, this.containerEl);
     }
 
     /**
