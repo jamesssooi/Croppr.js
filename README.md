@@ -195,6 +195,10 @@ var ratio = cropInstance.getValue('ratio');
 // value = {x: 0.1, y: 0.3: width: 0.57, height: 0.57}
 ```
 
+#### destroy()
+
+Destroys the Croppr instance and restores the original `img` element.
+
 #### moveTo(x: Number, y: Number)
 
 Moves the crop region to the specified coordinates. Returns the Croppr instance.
