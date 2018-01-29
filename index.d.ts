@@ -39,9 +39,9 @@ declare namespace Croppr {
 
   export interface CropprOptions {
     aspectRatio?: number;
-    maxSize?: Array<any>;
-    minSize?: Array<any>;
-    startSize?: Array<any>;
+    maxSize?: [number, number, '%' | 'px'];
+    minSize?: [number, number, '%' | 'px'];
+    startSize?: [number, number, '%' | 'px'];
     onCropStart?(data: Croppr.CropprValue): void;
     onCropMove?(data: Croppr.CropprValue): void;
     onCropEnd?(data: Croppr.CropprValue): void;
