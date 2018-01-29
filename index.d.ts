@@ -16,7 +16,7 @@ declare class Croppr {
   constructor(element: string | HTMLElement, options?: Croppr.CropprOptions, deferred?: boolean)
 
   /** Gets the value of the crop region */
-  getValue(mode?: "real" | "ratio" | "raw"): Croppr.CropprValue
+  getValue(mode?: 'real' | 'ratio' | 'raw'): Croppr.CropprValue
 
   /** Destroys the Croppr instance */
   destroy(): void
@@ -46,7 +46,7 @@ declare namespace Croppr {
     onCropMove?(data: Croppr.CropprValue): void;
     onCropEnd?(data: Croppr.CropprValue): void;
     onInitialize?(instance: Croppr): void;
-    returnMode?: "real" | "ratio" | "raw";
+    returnMode?: 'real' | 'ratio' | 'raw';
   }
 
   export interface CropprValue {
