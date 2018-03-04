@@ -36,7 +36,7 @@ Then include via script tag below.
 **Via script tag:**
 
 ```html
-<link src="path/to/croppr.css" rel="stylesheet"/>
+<link href="path/to/croppr.css" rel="stylesheet"/>
 <script src="path/to/croppr.js"></script>
 ```
 
