@@ -16,7 +16,7 @@ declare class Croppr {
   constructor(element: string | HTMLElement, options?: Croppr.CropprOptions, deferred?: boolean)
 
   /** Gets the value of the crop region */
-  getValue(mode?: 'real' | 'ratio' | 'raw'): Croppr.CropprValue
+  getValue(mode?: 'real' | 'ratio' | 'raw'): Croppr.CropValue
 
   /** Destroys the Croppr instance */
   destroy(): void
@@ -39,21 +39,27 @@ declare namespace Croppr {
 
   export interface CropprOptions {
     aspectRatio?: number;
-    maxSize?: [number, number, '%' | 'px'];
-    minSize?: [number, number, '%' | 'px'];
-    startSize?: [number, number, '%' | 'px'];
-    onCropStart?(data: Croppr.CropprValue): void;
-    onCropMove?(data: Croppr.CropprValue): void;
-    onCropEnd?(data: Croppr.CropprValue): void;
+    maxSize?: SizeValue;
+    minSize?: SizeValue;
+    startSize?: SizeValue;
+    onCropStart?(data: CropValue): void;
+    onCropMove?(data: CropValue): void;
+    onCropEnd?(data: CropValue): void;
     onInitialize?(instance: Croppr): void;
     returnMode?: 'real' | 'ratio' | 'raw';
   }
 
-  export interface CropprValue {
+  export interface CropValue {
     x: number;
     y: number;
     width: number;
     height: number
+  }
+
+  export interface SizeValue extends Array<string | number> {
+    0: number,
+    1: number,
+    2?: 'px' | '%'
   }
 
 }

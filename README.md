@@ -6,6 +6,7 @@
 * Made only with native, delicious vanilla JS
 * Zero dependencies
 * Supports touch devices!
+* Includes Typescript typings!
 
 **[Try it out in the demo →](https://jamesssooi.github.io/Croppr.js)**
 
@@ -35,7 +36,7 @@ Then include via script tag below.
 **Via script tag:**
 
 ```html
-<link src="path/to/croppr.css" rel="stylesheet"/>
+<link href="path/to/croppr.css" rel="stylesheet"/>
 <script src="path/to/croppr.js"></script>
 ```
 
