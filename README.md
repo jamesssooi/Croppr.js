@@ -6,7 +6,7 @@
 * Made only with native, delicious vanilla JS
 * Zero dependencies
 * Supports touch devices!
-* Includes Typescript typings!
+* Includes TypeScript typings!
 
 **[Try it out in the demo →](https://jamesssooi.github.io/Croppr.js)**
 
