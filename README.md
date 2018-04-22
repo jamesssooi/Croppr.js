@@ -220,5 +220,5 @@ Resets the crop region to its original position and size. Returns the Croppr ins
 
 [![Build Status](https://travis-ci.org/jamesssooi/Croppr.js.svg?branch=master)](https://travis-ci.org/jamesssooi/Croppr.js)
 
-Copyright © 2017 James Ooi.
+Copyright © 2018 James Ooi.
 Released under the MIT License.
