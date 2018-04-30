@@ -200,7 +200,7 @@ var ratio = cropInstance.getValue('ratio');
 
 Destroys the Croppr instance and restores the original `img` element.
 
-### changeImage(src: string)
+#### changeImage(src: string)
 
 Changes the image src. Returns the Croppr instance.
 
