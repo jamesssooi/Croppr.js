@@ -200,15 +200,19 @@ var ratio = cropInstance.getValue('ratio');
 
 Destroys the Croppr instance and restores the original `img` element.
 
-#### moveTo(x: Number, y: Number)
+### changeImage(src: string)
+
+Changes the image src. Returns the Croppr instance.
+
+#### moveTo(x: number, y: number)
 
 Moves the crop region to the specified coordinates. Returns the Croppr instance.
 
-#### resizeTo(width: Number, height: Number, _origin?: Array_)
+#### resizeTo(width: number, height: number, _origin?: Array_)
 
 Resizes the crop region to the specified size. `origin` is an optional argument that specifies the origin point (in ratio) to resize from in the format of `[x, y]`. Defaults to `[0.5, 0.5]` (center). Returns the Croppr instance.
 
-#### scaleBy(factor: Number, _origin?: Array_)
+#### scaleBy(factor: number, _origin?: Array_)
 
 Scales the crop region by a factor. `origin` is an optional argument that specifies the origin point (in ratio) to resize from in the format of `[x, y]`. Defaults to `[0.5, 0.5]` (center). Returns the Croppr instance.
 
