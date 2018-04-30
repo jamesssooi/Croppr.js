@@ -18,6 +18,9 @@ declare class Croppr {
   /** Gets the value of the crop region */
   getValue(mode?: 'real' | 'ratio' | 'raw'): Croppr.CropValue
 
+  /** Changes the image src. */
+  setImage(src: string): Croppr
+
   /** Destroys the Croppr instance */
   destroy(): void
 
@@ -32,6 +35,7 @@ declare class Croppr {
 
   /** Resets the crop region to the initial settings */
   reset(): Croppr
+
 }
 
 /*~ Declare type modules */

@@ -1,3 +1,6 @@
+/// @ts-check
+/// <reference path="../index.d.ts"/>
+
 /**
  * Croppr.js
  * https://github.com/jamesssooi/Croppr.js
@@ -26,11 +29,19 @@ export default class Croppr extends CropprCore {
 
   /**
    * Gets the value of the crop region.
-   * @param {String} mode Which mode of calculation to use: 'real', 'ratio' or
+   * @param {String} [mode] Which mode of calculation to use: 'real', 'ratio' or
    *      'raw'.
    */
   getValue(mode) {
     return super.getValue(mode);
+  }
+
+  /**
+   * Changes the image src.
+   * @param {String} src
+   */
+  setImage(src) {
+    return super.setImage(src);
   }
 
   /**
