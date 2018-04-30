@@ -147,6 +147,23 @@ export default class CropprCore {
   }
 
   /**
+   * Changes the image src.
+   * @param {String} src
+   */
+  setImage(src) {
+    // Add onload listener to reinitialize box
+    this.imageEl.onload = () => {
+      this.box = this.initializeBox(this.options);
+      this.redraw();
+    }
+
+    // Change image source
+    this.imageEl.src = src;
+    this.imageClippedEl.src = src;
+    return this;
+  }
+
+  /**
    * Destroy the Croppr instance and replace with the original element.
    */
   destroy() {
