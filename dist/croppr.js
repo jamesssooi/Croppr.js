@@ -939,8 +939,11 @@ var CropprCore = function () {
       if (mode == 'real') {
         var actualWidth = this.imageEl.naturalWidth;
         var actualHeight = this.imageEl.naturalHeight;
-        var factorX = actualWidth / this.imageEl.offsetWidth;
-        var factorY = actualHeight / this.imageEl.offsetHeight;
+        var _imageEl$getBoundingC = this.imageEl.getBoundingClientRect(),
+            elementWidth = _imageEl$getBoundingC.width,
+            elementHeight = _imageEl$getBoundingC.height;
+        var factorX = actualWidth / elementWidth;
+        var factorY = actualHeight / elementHeight;
         return {
           x: Math.round(this.box.x1 * factorX),
           y: Math.round(this.box.y1 * factorY),
@@ -948,13 +951,14 @@ var CropprCore = function () {
           height: Math.round(this.box.height() * factorY)
         };
       } else if (mode == 'ratio') {
-        var elementWidth = this.imageEl.offsetWidth;
-        var elementHeight = this.imageEl.offsetHeight;
+        var _imageEl$getBoundingC2 = this.imageEl.getBoundingClientRect(),
+            _elementWidth = _imageEl$getBoundingC2.width,
+            _elementHeight = _imageEl$getBoundingC2.height;
         return {
-          x: round(this.box.x1 / elementWidth, 3),
-          y: round(this.box.y1 / elementHeight, 3),
-          width: round(this.box.width() / elementWidth, 3),
-          height: round(this.box.height() / elementHeight, 3)
+          x: round(this.box.x1 / _elementWidth, 3),
+          y: round(this.box.y1 / _elementHeight, 3),
+          width: round(this.box.width() / _elementWidth, 3),
+          height: round(this.box.height() / _elementHeight, 3)
         };
       } else if (mode == 'raw') {
         return {

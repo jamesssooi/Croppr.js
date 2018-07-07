@@ -8,7 +8,8 @@
     "test": "mocha",
     "build": "rollup --config rollup.config.dev.js & cp src/css/croppr.css dist/croppr.css",
     "watch": "onchange \"src/**/*.*\" -v -- npm run build",
-    "production": "npm run build & rollup --config rollup.config.prod.js & cleancss src/css/croppr.css -o dist/croppr.min.css"
+    "production": "npm run build & rollup --config rollup.config.prod.js & cleancss src/css/croppr.css -o dist/croppr.min.css",
+    "dist": "npm run build && npm run production"
   },
   "repository": {
     "type": "git",
