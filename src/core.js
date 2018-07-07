@@ -581,8 +581,9 @@ export default class CropprCore {
     if (mode == 'real') {
       const actualWidth = this.imageEl.naturalWidth;
       const actualHeight = this.imageEl.naturalHeight;
-      const factorX = actualWidth / this.imageEl.offsetWidth;
-      const factorY = actualHeight / this.imageEl.offsetHeight;
+      const { width: elementWidth, height: elementHeight } = this.imageEl.getBoundingClientRect();
+      const factorX = actualWidth / elementWidth;
+      const factorY = actualHeight / elementHeight;
       return {
         x: Math.round(this.box.x1 * factorX),
         y: Math.round(this.box.y1 * factorY),
@@ -590,8 +591,7 @@ export default class CropprCore {
         height: Math.round(this.box.height() * factorY)
       }
     } else if (mode == 'ratio') {
-      const elementWidth = this.imageEl.offsetWidth;
-      const elementHeight = this.imageEl.offsetHeight;
+      const { width: elementWidth, height: elementHeight } = this.imageEl.getBoundingClientRect();
       return {
         x: round(this.box.x1 / elementWidth, 3),
         y: round(this.box.y1 / elementHeight, 3),

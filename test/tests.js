@@ -300,8 +300,15 @@ function createMockCroppr(options, _deferred) {
         this.eventBus = this.containerEl;
 
         // Mock imageEl
-        this.imageEl = {offsetWidth: 500, offsetHeight: 500,
-                        naturalWidth: 1000, naturalHeight: 1000};
+        this.imageEl = {
+            offsetWidth: 500,
+            offsetHeight: 500,
+            naturalWidth: 1000,
+            naturalHeight: 1000,
+            getBoundingClientRect: function() {
+                return { width: 500, height: 500 }
+            }
+        };
         
         // Mock cropperEl
         this.cropperEl = {
