@@ -480,9 +480,7 @@ export default class CropprCore {
       min.height, origin, this.options.aspectRatio);
 
     // Constrain to boundary
-    const parentWidth = this.cropperEl.offsetWidth;
-    const parentHeight = this.cropperEl.offsetHeight;
-    box.constrainToBoundary(parentWidth, parentHeight, origin);
+    box.constrainToBoundary(container.width, container.height, origin);
 
     // Finally, update the visuals (border, handles, clipped image, etc)
     this.box = box;
