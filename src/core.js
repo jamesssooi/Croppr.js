@@ -73,6 +73,12 @@ export default class CropprCore {
     // Process option values
     this.options.convertToPixels(this.cropperEl);
 
+    // Calculate scale factor to account for a scaled Croppr instances
+    // See: https://github.com/jamesssooi/Croppr.js/issues/23
+    const container = this.cropperEl.getBoundingClientRect();
+    this._scaleFactorX = this.cropperEl.offsetWidth / container.width;
+    this._scaleFactorY = this.cropperEl.offsetHeight / container.height;
+
     // Listen for events from children
     this.attachHandlerEvents();
     this.attachRegionEvents();
@@ -177,9 +183,9 @@ export default class CropprCore {
    */
   initializeBox(opts) {
     // Create initial box
-    const width = opts.startSize.width;
-    const height = opts.startSize.height;
-    let box = new Box(0, 0, width, height)
+    const width = opts.startSize.width * (1/this._scaleFactorX);
+    const height = opts.startSize.height * (1/this._scaleFactorY);
+    let box = new Box(0, 0, width, height);
 
     // Maintain ratio
     box.constrainToRatio(opts.aspectRatio, [0.5, 0.5]);
@@ -191,13 +197,12 @@ export default class CropprCore {
       [0.5, 0.5], opts.aspectRatio);
 
     // Constrain to boundary
-    const parentWidth = this.cropperEl.offsetWidth;
-    const parentHeight = this.cropperEl.offsetHeight;
-    box.constrainToBoundary(parentWidth, parentHeight, [0.5, 0.5]);
+    const container = this.cropperEl.getBoundingClientRect();
+    box.constrainToBoundary(container.width, container.height, [0.5, 0.5]);
 
     // Move to center
-    const x = (this.cropperEl.offsetWidth / 2) - (box.width() / 2);
-    const y = (this.cropperEl.offsetHeight / 2) - (box.height() / 2);
+    const x = (container.width / 2) - (box.width() / 2);
+    const y = (container.height / 2) - (box.height() / 2);
     box.move(x, y);
 
     return box;
@@ -209,12 +214,12 @@ export default class CropprCore {
   redraw() {
     // Round positional values to prevent subpixel coordinates, which can
     // result in element that is rendered blurly
-    const width = Math.round(this.box.width()),
-      height = Math.round(this.box.height()),
-      x1 = Math.round(this.box.x1),
-      y1 = Math.round(this.box.y1),
-      x2 = Math.round(this.box.x2),
-      y2 = Math.round(this.box.y2);
+    const width = Math.round(this.box.width() * this._scaleFactorX),
+      height = Math.round(this.box.height() * this._scaleFactorY),
+      x1 = Math.round(this.box.x1 * this._scaleFactorX),
+      y1 = Math.round(this.box.y1 * this._scaleFactorY),
+      x2 = Math.round(this.box.x2 * this._scaleFactorX),
+      y2 = Math.round(this.box.y2 * this._scaleFactorY);
 
     window.requestAnimationFrame(() => {
       // Update region element
@@ -475,9 +480,7 @@ export default class CropprCore {
       min.height, origin, this.options.aspectRatio);
 
     // Constrain to boundary
-    const parentWidth = this.cropperEl.offsetWidth;
-    const parentHeight = this.cropperEl.offsetHeight;
-    box.constrainToBoundary(parentWidth, parentHeight, origin);
+    box.constrainToBoundary(container.width, container.height, origin);
 
     // Finally, update the visuals (border, handles, clipped image, etc)
     this.box = box;
@@ -739,6 +742,7 @@ export default class CropprCore {
     }
   }
 }
+
 
 /**
  * HELPER FUNCTIONS
