@@ -15,9 +15,11 @@ var assert = chai.assert;
 require('jsdom-global')(fs.readFileSync('test/mock.html', 'utf-8'), {
     features: {
         FetchExternalResources: ["script", "link", "img"],
-        ProcessExternalResources: ["script", "img"]
+        ProcessExternalResources: ["script", "img"],
     }
 });
+global.Image = window.Image;
+
 var Croppr = require('../dist/croppr.js');
 
 describe('Croppr', function() {
@@ -284,6 +286,16 @@ describe('Croppr behaviour', function() {
             assert.isTrue(onCropStartSpy.called && onCropMoveSpy.called && onCropEndSpy.called);
         });
     });
+
+    // describe('Method getDataImage', function() {
+    //     it('Method should return source crop image in cb', function() {
+    //         const instance = createMockCroppr({});
+    //         const callback = sinon.spy();
+
+    //         instance.getDataImage(callback);
+    //         assert.isTrue(callback.calledOnce);
+    //     });
+    // });
 });
 
 /**
@@ -295,8 +307,8 @@ function createMockCroppr(options, _deferred) {
     sinon.stub(instance, 'createDOM', function() {
         // Mock containerEl & eventBus
         this.containerEl = document.createElement('div');
-        this.containerEl['offsetWidth'] = 500;
-        this.containerEl['offsetHeight'] = 500;
+        // this.containerEl['offsetWidth'] = 500;
+        // this.containerEl['offsetHeight'] = 500;
         this.eventBus = this.containerEl;
 
         // Mock imageEl

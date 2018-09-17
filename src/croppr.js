@@ -115,4 +115,30 @@ export default class Croppr extends CropprCore {
     }
     return this;
   }
+
+  getDataImage(cb) {
+    let img = new Image();
+    const value = this.getValue();
+    const canvas = document.createElement('canvas');
+          canvas.width = value.width;
+          canvas.height = value.height;
+    const ctx = canvas.getContext('2d');
+
+
+    img.setAttribute('crossOrigin', 'anonymous');
+    img.onload = function() {
+      ctx.drawImage(img, -value.x, -value.y);
+      const cropImage = canvas.toDataURL('image/jpeg');
+
+      if (typeof cb === 'function' && cropImage) {
+        cb(cropImage);
+      }
+
+      canvas.remove();
+      img.remove();
+    }
+    img.src = this.imageEl.src;
+
+    return this;
+  }
 }
