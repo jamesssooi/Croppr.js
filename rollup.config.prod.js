@@ -20,4 +20,4 @@ export default {
   moduleName: 'Croppr',
   dest: 'dist/croppr.min.js',
   banner: banner
-};r
+};
