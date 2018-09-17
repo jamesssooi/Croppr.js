@@ -579,6 +579,9 @@ var CropprCore = function () {
     value: function initialize(element) {
       this.createDOM(element);
       this.options.convertToPixels(this.cropperEl);
+      var container = this.cropperEl.getBoundingClientRect();
+      this._scaleFactorX = this.cropperEl.offsetWidth / container.width;
+      this._scaleFactorY = this.cropperEl.offsetHeight / container.height;
       this.attachHandlerEvents();
       this.attachRegionEvents();
       this.attachOverlayEvents();
@@ -653,18 +656,17 @@ var CropprCore = function () {
   }, {
     key: 'initializeBox',
     value: function initializeBox(opts) {
-      var width = opts.startSize.width;
-      var height = opts.startSize.height;
+      var width = opts.startSize.width * (1 / this._scaleFactorX);
+      var height = opts.startSize.height * (1 / this._scaleFactorY);
       var box = new Box(0, 0, width, height);
       box.constrainToRatio(opts.aspectRatio, [0.5, 0.5]);
       var min = opts.minSize;
       var max = opts.maxSize;
       box.constrainToSize(max.width, max.height, min.width, min.height, [0.5, 0.5], opts.aspectRatio);
-      var parentWidth = this.cropperEl.offsetWidth;
-      var parentHeight = this.cropperEl.offsetHeight;
-      box.constrainToBoundary(parentWidth, parentHeight, [0.5, 0.5]);
-      var x = this.cropperEl.offsetWidth / 2 - box.width() / 2;
-      var y = this.cropperEl.offsetHeight / 2 - box.height() / 2;
+      var container = this.cropperEl.getBoundingClientRect();
+      box.constrainToBoundary(container.width, container.height, [0.5, 0.5]);
+      var x = container.width / 2 - box.width() / 2;
+      var y = container.height / 2 - box.height() / 2;
       box.move(x, y);
       return box;
     }
@@ -672,12 +674,12 @@ var CropprCore = function () {
     key: 'redraw',
     value: function redraw() {
       var _this3 = this;
-      var width = Math.round(this.box.width()),
-          height = Math.round(this.box.height()),
-          x1 = Math.round(this.box.x1),
-          y1 = Math.round(this.box.y1),
-          x2 = Math.round(this.box.x2),
-          y2 = Math.round(this.box.y2);
+      var width = Math.round(this.box.width() * this._scaleFactorX),
+          height = Math.round(this.box.height() * this._scaleFactorY),
+          x1 = Math.round(this.box.x1 * this._scaleFactorX),
+          y1 = Math.round(this.box.y1 * this._scaleFactorY),
+          x2 = Math.round(this.box.x2 * this._scaleFactorX),
+          y2 = Math.round(this.box.y2 * this._scaleFactorY);
       window.requestAnimationFrame(function () {
         _this3.regionEl.style.transform = 'translate(' + x1 + 'px, ' + y1 + 'px)';
         _this3.regionEl.style.width = width + 'px';
@@ -859,9 +861,7 @@ var CropprCore = function () {
       var min = this.options.minSize;
       var max = this.options.maxSize;
       box.constrainToSize(max.width, max.height, min.width, min.height, origin, this.options.aspectRatio);
-      var parentWidth = this.cropperEl.offsetWidth;
-      var parentHeight = this.cropperEl.offsetHeight;
-      box.constrainToBoundary(parentWidth, parentHeight, origin);
+      box.constrainToBoundary(container.width, container.height, origin);
       this.box = box;
       this.redraw();
       if (this.options.onCropMove !== null) {
