@@ -1179,7 +1179,7 @@ var Croppr$1 = function (_CropprCore) {
     }
   }, {
     key: 'getDataImage',
-    value: function getDataImage(cb) {
+    value: function getDataImage(extension, cb) {
       var img = new Image();
       var value = this.getValue();
       var canvas = document.createElement('canvas');
@@ -1189,9 +1189,10 @@ var Croppr$1 = function (_CropprCore) {
       img.setAttribute('crossOrigin', 'anonymous');
       img.onload = function () {
         ctx.drawImage(img, -value.x, -value.y);
-        var cropImage = canvas.toDataURL('image/jpeg');
+        var cropImage = canvas.toDataURL(extension || 'image/jpeg');
+        var blob = dataURLtoBlob(cropImage);
         if (typeof cb === 'function' && cropImage) {
-          cb(cropImage);
+          cb(cropImage, blob);
         }
         canvas.remove();
         img.remove();
@@ -1202,6 +1203,17 @@ var Croppr$1 = function (_CropprCore) {
   }]);
   return Croppr;
 }(CropprCore);
+function dataURLtoBlob(dataurl) {
+  var arr = dataurl.split(','),
+      mime = arr[0].match(/:(.*?);/)[1],
+      bstr = atob(arr[1]),
+      n = bstr.length,
+      u8arr = new Uint8Array(n);
+  while (n--) {
+    u8arr[n] = bstr.charCodeAt(n);
+  }
+  return new Blob([u8arr], { type: mime });
+}
 
 return Croppr$1;
 
