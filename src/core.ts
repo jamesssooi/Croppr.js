@@ -247,15 +247,15 @@ export default class CropprCore {
         let handle = this.handles[i];
 
         // Calculate handle position
-        const handleWidth = handle.el.offsetWidth;
-        const handleHeight = handle.el.offsetHeight;
+        const handleWidth = handle.element.offsetWidth;
+        const handleHeight = handle.element.offsetHeight;
         const left = x1 + (width * handle.position[0]) - handleWidth / 2;
         const top = y1 + (height * handle.position[1]) - handleHeight / 2;
 
         // Apply new position. The positional values are rounded to
         // prevent subpixel positions which can result in a blurry element
-        handle.el.style.transform = `translate(${Math.round(left)}px, ${Math.round(top)}px)`;
-        handle.el.style.zIndex = foregroundHandleIndex == i ? 5 : 4;
+        handle.element.style.transform = `translate(${Math.round(left)}px, ${Math.round(top)}px)`;
+        handle.element.style.zIndex = foregroundHandleIndex == i ? 5 : 4;
       }
     });
   }
