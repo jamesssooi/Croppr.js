@@ -4,7 +4,7 @@
  */
 
 import Handle from './handle';
-import Box from './box';
+import Box from './lib/box';
 import enableTouch from './touch';
 
 /**

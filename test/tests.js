@@ -79,7 +79,12 @@ describe('Croppr', function() {
 
         it('should have a default full sized crop region', function() {
             let instance = createMockCroppr({});
-            assert.deepEqual(instance.box, {x1: 0, y1: 0, x2: 500, y2: 500});
+            assert.deepEqual({
+                x1: instance.box.x1,
+                y1: instance.box.y1,
+                x2: instance.box.x2,
+                y2: instance.box.y2,
+            }, { x1: 0, y1: 0, x2: 500, y2: 500 });
         });
 
         it('should respect ratio if given', function() {
@@ -233,7 +238,6 @@ describe('Croppr behaviour', function() {
             instance.resizeTo(250, 250);
             instance.moveTo(0, 0);
             simulateRegionMove(instance, 0, 0, 500, 500);
-
             assert.equal(instance.box.x1, 250);
             assert.equal(instance.box.y1, 250);
             assert.equal(instance.box.x2, 500);
