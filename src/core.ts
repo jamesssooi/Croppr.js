@@ -3,7 +3,7 @@
  * Here lies the main logic.
  */
 
-import Handle from './handle';
+import Handle from './lib/handle';
 import Box from './lib/box';
 import enableTouch from './touch';
 
@@ -137,7 +137,7 @@ export default class CropprCore {
         HANDLES[i].cursor,
         this.eventBus);
       this.handles.push(handle);
-      handleContainerEl.appendChild(handle.el);
+      handleContainerEl.appendChild(handle.element);
     }
 
     // And then we piece it all together!
