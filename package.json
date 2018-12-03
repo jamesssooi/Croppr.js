@@ -47,8 +47,11 @@
     "rollup-plugin-babel": "^2.7.1",
     "rollup-plugin-cleanup": "^1.0.0",
     "rollup-plugin-json": "^2.1.0",
+    "rollup-plugin-typescript": "^1.0.0",
     "rollup-plugin-uglify": "^1.0.1",
-    "sinon": "^1.17.7"
+    "sinon": "^1.17.7",
+    "tslib": "^1.9.3",
+    "typescript": "^3.2.1"
   },
   "babel": {
     "presets": [

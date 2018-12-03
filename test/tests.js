@@ -18,7 +18,7 @@ require('jsdom-global')(fs.readFileSync('test/mock.html', 'utf-8'), {
         ProcessExternalResources: ["script", "img"]
     }
 });
-var Croppr = require('../dist/croppr.js');
+var Croppr = require('../build/croppr.js');
 
 describe('Croppr', function() {
     beforeEach('setup fake dom', function() {
