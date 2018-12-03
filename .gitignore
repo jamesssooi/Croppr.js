@@ -1,4 +1,5 @@
-.DS_Store
+# Output directories
+/build
 
 # Logs
 logs
@@ -37,3 +38,12 @@ jspm_packages
 
 # Optional REPL history
 .node_repl_history
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
