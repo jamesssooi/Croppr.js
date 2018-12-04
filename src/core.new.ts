@@ -7,7 +7,7 @@ class Core {
    * @constructor
    */
   constructor(element: HTMLElement | string, options: CropprOptions, deferred = false) {
-    const target = this.getTargetElement(element);
+    const target = Utils.getTargetElement(element);
 
     if (target.getAttribute('src') === null) {
       throw 'Image src not provided.'
@@ -16,22 +16,6 @@ class Core {
     if (!deferred) {
       this.initialize(target);
     }
-  }
-
-  /**
-   * Returns the targeted element.
-   */
-  private getTargetElement(element: HTMLElement | string) {
-    if (Utils.isElement(element)) {
-      return element;
-    }
-
-    element = <HTMLElement> document.querySelector(element);
-    if (element == null) {
-      throw 'Unable to find element.';
-    }
-
-    return element;
   }
 
   /**
