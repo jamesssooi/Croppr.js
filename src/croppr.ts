@@ -7,15 +7,12 @@
  * 
  * (C) 2018 James Ooi. Released under the MIT License.
  */
+import './lib/polyfills';
 import { CropprOptions, Point } from './types';
 import CropprCore from './core';
-import Box from './lib/box';
-
 
 class Croppr extends CropprCore {
 
-  private box: Box;
-  private options: CropprOptions;
 
   /**
    * @constructor

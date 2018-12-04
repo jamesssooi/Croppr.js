@@ -6,7 +6,7 @@ class Handle {
   public position: Point;
 
   /** The handle DOM element. */
-  public element: Element;
+  public element: HTMLElement;
 
   /** The sides of the crop region that this handle will affect. */
   public constraints: HandleConstraints;

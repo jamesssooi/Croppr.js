@@ -9,6 +9,7 @@ export interface CropprOptions {
   onCropMove?(data: CropValue): void;
   onCropEnd?(data: CropValue): void;
   onInitialize?(instance: Croppr): void;
+  convertToPixels?(element: HTMLElement): void;
   returnMode?: 'real' | 'ratio' | 'raw';
 }
 
