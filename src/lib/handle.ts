@@ -22,12 +22,6 @@ class Handle {
     this.constraints = constraints;
     this.eventBus = eventBus;
     this.element = this.createHandleElement(cursor);
-
-    this.onMouseDown = this.onMouseDown.bind(this);
-    this.onMouseUp = this.onMouseUp.bind(this);
-    this.onMouseMove = this.onMouseMove.bind(this);
-
-    this.element.addEventListener('mousedown', this.onMouseDown);
   }
 
   /**

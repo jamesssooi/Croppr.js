@@ -9,6 +9,7 @@ import * as Utils from './utils';
 
 // Import engines
 import onRegionMoveEngine from './engine/onRegionMoveEngine';
+import onHandleMoveEngine from './engine/onHandleMoveEngine';
 
 
 /**
@@ -46,11 +47,6 @@ export default class CropprCore {
   private handles: Handle[];
   private _scaleFactorX: number;
   private _scaleFactorY: number;
-  private activeHandle: any;
-  private currentMove: any;
-  
-  // Engines
-  private onRegionMoveEngine: Engine;
 
   // Elements
   public cropperEl: HTMLElement;
@@ -336,7 +332,7 @@ export default class CropprCore {
   /**
    * Dispatch a new CustomEvent to the event bus.
    */
-  private dispatchToEventBus(eventName: string, eventArgs: any) {
+  private dispatchToEventBus(eventName: string, eventArgs?: any) {
     this.eventBus.dispatchEvent(new CustomEvent(eventName, {
       detail: eventArgs,
     }));
@@ -347,10 +343,32 @@ export default class CropprCore {
    * Enables resizing of the region element.
    */
   private attachHandlerEvents() {
-    const eventBus = this.eventBus;
-    eventBus.addEventListener('handlestart', this.onHandleMoveStart.bind(this));
-    eventBus.addEventListener('handlemove', this.onHandleMoveMoving.bind(this));
-    eventBus.addEventListener('handleend', this.onHandleMoveEnd.bind(this));
+    this.handles.forEach(handle => {
+      const onMouseDown = (e: MouseEvent) => {
+        e.stopPropagation();
+        document.addEventListener('mouseup', onMouseUp);
+        document.addEventListener('mousemove', onMouseMove);
+        this.dispatchToEventBus('handlestart', { handle });
+      }
+
+      const onMouseMove = (e: MouseEvent) => {
+        e.stopPropagation();
+        this.dispatchToEventBus('handlemove', {
+          mouseX: e.clientX, mouseY: e.clientY
+        });
+      }
+
+      const onMouseUp = (e: MouseEvent) => {
+        e.stopPropagation();
+        document.removeEventListener('mouseup', onMouseUp);
+        document.removeEventListener('mousemove', onMouseMove);
+        this.dispatchToEventBus('handleend');
+      }
+  
+      handle.element.addEventListener('mousedown', onMouseDown);
+    });
+
+    return new onHandleMoveEngine(this.eventBus, this);
   }
 
   /**
@@ -437,135 +455,6 @@ export default class CropprCore {
       }));
     }
 
-  }
-
-  /**
-   * EVENT HANDLER
-   * Executes when user begins dragging a handle.
-   */
-  onHandleMoveStart(e) {
-    let handle = e.detail.handle;
-
-    // The origin point is the point where the box is scaled from.
-    // This is usually the opposite side/corner of the active handle.
-    const originPoint = [1 - handle.position[0], 1 - handle.position[1]];
-    let [originX, originY] = this.box.getAbsolutePoint(<Point> originPoint);
-
-    this.activeHandle = { handle, originPoint, originX, originY }
-
-    // Trigger callback
-    if (this.options.onCropStart !== null) {
-      this.options.onCropStart(this.getValue());
-    }
-  }
-
-  /**
-   * EVENT HANDLER
-   * Executes on handle move. Main logic to manage the movement of handles.
-   */
-  onHandleMoveMoving(e) {
-    let { mouseX, mouseY } = e.detail;
-
-    // Calculate mouse's position in relative to the container
-    let container = this.cropperEl.getBoundingClientRect();
-    mouseX = mouseX - container.left;
-    mouseY = mouseY - container.top;
-
-    // Ensure mouse is within the boundaries
-    if (mouseX < 0) { mouseX = 0; }
-    else if (mouseX > container.width) { mouseX = container.width; }
-
-    if (mouseY < 0) { mouseY = 0; }
-    else if (mouseY > container.height) { mouseY = container.height; }
-
-    // Bootstrap helper variables
-    let origin = this.activeHandle.originPoint.slice();
-    const originX = this.activeHandle.originX;
-    const originY = this.activeHandle.originY;
-    const handle = this.activeHandle.handle;
-    const TOP_MOVABLE = handle.constraints[0] === 1;
-    const RIGHT_MOVABLE = handle.constraints[1] === 1;
-    const BOTTOM_MOVABLE = handle.constraints[2] === 1;
-    const LEFT_MOVABLE = handle.constraints[3] === 1;
-    const MULTI_AXIS = (LEFT_MOVABLE || RIGHT_MOVABLE) &&
-      (TOP_MOVABLE || BOTTOM_MOVABLE);
-
-    // Apply movement to respective sides according to the handle's
-    // constraint values.
-    let x1 = LEFT_MOVABLE || RIGHT_MOVABLE ? originX : this.box.x1;
-    let x2 = LEFT_MOVABLE || RIGHT_MOVABLE ? originX : this.box.x2;
-    let y1 = TOP_MOVABLE || BOTTOM_MOVABLE ? originY : this.box.y1;
-    let y2 = TOP_MOVABLE || BOTTOM_MOVABLE ? originY : this.box.y2;
-    x1 = LEFT_MOVABLE ? mouseX : x1;
-    x2 = RIGHT_MOVABLE ? mouseX : x2;
-    y1 = TOP_MOVABLE ? mouseY : y1;
-    y2 = BOTTOM_MOVABLE ? mouseY : y2;
-
-    // Check if the user dragged past the origin point. If it did,
-    // we set the flipped flag to true.
-    let [isFlippedX, isFlippedY] = [false, false];
-    if (LEFT_MOVABLE || RIGHT_MOVABLE) {
-      isFlippedX = LEFT_MOVABLE ? mouseX > originX : mouseX < originX;
-    }
-    if (TOP_MOVABLE || BOTTOM_MOVABLE) {
-      isFlippedY = TOP_MOVABLE ? mouseY > originY : mouseY < originY;
-    }
-
-    // If it is flipped, we swap the coordinates and flip the origin point.
-    if (isFlippedX) {
-      const tmp = x1; x1 = x2; x2 = tmp; // Swap x1 and x2
-      origin[0] = 1 - origin[0]; // Flip origin x point
-    }
-    if (isFlippedY) {
-      const tmp = y1; y1 = y2; y2 = tmp; // Swap y1 and y2
-      origin[1] = 1 - origin[1]; // Flip origin y point
-    }
-
-    // Create new box object
-    let box = new Box(x1, y1, x2, y2);
-
-    // Maintain aspect ratio
-    if (this.options.aspectRatio) {
-      const ratio = this.options.aspectRatio;
-      let isVerticalMovement = false;
-      if (MULTI_AXIS) {
-        isVerticalMovement = (mouseY > box.y1 + ratio * box.width()) ||
-          (mouseY < box.y2 - ratio * box.width());
-      } else if (TOP_MOVABLE || BOTTOM_MOVABLE) {
-        isVerticalMovement = true;
-      }
-      const ratioMode = isVerticalMovement ? 'width' : 'height';
-      box.constrainToRatio(ratio, origin, ratioMode);
-    }
-
-    // Maintain minimum/maximum size
-    const min = this.options.minSize;
-    const max = this.options.maxSize;
-    box.constrainToSize(max.width, max.height, min.width,
-      min.height, origin, this.options.aspectRatio);
-
-    // Constrain to boundary
-    box.constrainToBoundary(container.width, container.height, origin);
-
-    // Finally, update the visuals (border, handles, clipped image, etc)
-    this.box = box;
-    this.redraw();
-
-    // Trigger callback
-    if (this.options.onCropMove !== null) {
-      this.options.onCropMove(this.getValue());
-    }
-  }
-
-  /**
-   * EVENT HANDLER
-   * Executes on handle move end.
-   */
-  onHandleMoveEnd(e) {
-    // Trigger callback
-    if (this.options.onCropEnd !== null) {
-      this.options.onCropEnd(this.getValue());
-    }
   }
 
   /**
