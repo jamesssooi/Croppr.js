@@ -21,22 +21,6 @@ class onHandleMoveEngine implements Engine {
   constructor(eventBus: HTMLElement, croppr: CropprCore) {
     this.croppr = croppr;
     this.eventBus = eventBus;
-    this.attachListeners();
-  }
-
-  /**
-   * Attach listeners to the event bus.
-   */
-  private attachListeners() {
-    this.eventBus.addEventListener('handlestart', e => {
-      this.croppr.updateBox(this.onStart(e));
-    });
-    this.eventBus.addEventListener('handlemove', e => {
-      this.croppr.updateBox(this.onMove(e));
-    });
-    this.eventBus.addEventListener('handleend', e => {
-      this.croppr.updateBox(this.onEnd(e));
-    });
   }
 
   public onStart(e) {

@@ -368,7 +368,18 @@ export default class CropprCore {
       handle.element.addEventListener('mousedown', onMouseDown);
     });
 
-    return new onHandleMoveEngine(this.eventBus, this);
+    const handleEngine = new onHandleMoveEngine(this.eventBus, this);
+    this.eventBus.addEventListener('handlestart', e => {
+      this.updateBox(handleEngine.onStart(e));
+    });
+    this.eventBus.addEventListener('handlemove', e => {
+      this.updateBox(handleEngine.onMove(e));
+    });
+    this.eventBus.addEventListener('handleend', e => {
+      this.updateBox(handleEngine.onEnd(e));
+    });
+
+    return handleEngine;
   }
 
   /**
