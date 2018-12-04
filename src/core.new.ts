@@ -1,7 +1,10 @@
 import { CropprOptions } from "./types";
+import * as CONST from './lib/constants';
 import * as Utils from './utils';
 
 class Core {
+
+  private handles: { element: HTMLElement, constraints: number[] }[];
 
   /**
    * @constructor
@@ -48,7 +51,28 @@ class Core {
         <div class="croppr-overlay"></div>
         <div class="croppr-handleContainer"></div>
       </div>`;
+
+
+    // Create and insert handles
+    this.handles = this.createHandles();
+    this.handles.forEach(h => {
+      const handleContainer = root.querySelector('.croppr-handleContainer');
+      handleContainer.appendChild(h.element);
+    });
+
     return root;
+  }
+
+  /**
+   * Create and returns default handles' DOM elements;
+   */
+  private createHandles() {
+    return CONST.DEFAULT_HANDLES.map(handle => {
+      const element = document.createElement('div');
+      element.className = 'croppr-handle';
+      element.style.cursor = handle.cursor;
+      return { element, constraints: handle.constraints }
+    });
   }
 
 }
