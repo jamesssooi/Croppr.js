@@ -10,9 +10,12 @@
 import './lib/polyfills';
 import { CropprOptions, Point } from './types';
 import CropprCore from './core';
+import NewCroppr from './core.new';
 
 
 class Croppr extends CropprCore {
+
+  static NewCroppr = NewCroppr;
 
   /**
    * @constructor
