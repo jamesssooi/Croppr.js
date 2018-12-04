@@ -41,7 +41,6 @@ class onHandleMoveEngine implements Engine {
 
   public onStart(e) {
     const handle = e.detail.handle;
-    console.log(e.detail);
 
     // The origin point is the point where the box will be scaled from. This
     // defaults to the opposite side/corner of the active handle.
