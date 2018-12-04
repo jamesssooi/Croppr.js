@@ -1,4 +1,6 @@
 import Croppr from './croppr';
+import CropprCore from './core';
+import Box from './lib/box';
 
 export interface CropprOptions {
   aspectRatio?: number;
@@ -11,6 +13,15 @@ export interface CropprOptions {
   onInitialize?(instance: Croppr): void;
   convertToPixels?(element: HTMLElement): void;
   returnMode?: 'real' | 'ratio' | 'raw';
+}
+
+/**
+ * An engine processes user inputs and returns a new crop region.
+ */
+export interface Engine {
+  onStart?(e: any): Box | null
+  onMove?(e: any): Box | null
+  onEnd?(e: any): Box | null
 }
 
 /**

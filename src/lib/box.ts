@@ -45,6 +45,13 @@ class Box {
   }
 
   /**
+   * Returns a copy of this box.
+   */
+  public copy(): Box {
+    return new Box(this.x1, this.y1, this.x2, this.y2);
+  }
+
+  /**
    * Calculates the width of the box.
    */
   public width() {

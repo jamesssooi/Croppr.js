@@ -2,10 +2,14 @@
  * CropprCore
  * Here lies the main logic.
  */
-import { CropprOptions, Point, Size, HandleConstraints } from './types';
+import { CropprOptions, Point, Size, HandleConstraints, Engine } from './types';
 import Handle from './lib/handle';
 import Box from './lib/box';
 import * as Utils from './utils';
+
+// Import engines
+import onRegionMoveEngine from './engine/onRegionMoveEngine';
+
 
 /**
  * Define a list of handles to create.
@@ -35,18 +39,21 @@ export default class CropprCore {
 
   public options: CropprOptions;
   public box: Box;
+  public eventBus: HTMLElement;
 
   private _initialized: boolean;
   private _restore: any;
-  private eventBus: HTMLElement;
   private handles: Handle[];
   private _scaleFactorX: number;
   private _scaleFactorY: number;
   private activeHandle: any;
   private currentMove: any;
+  
+  // Engines
+  private onRegionMoveEngine: Engine;
 
   // Elements
-  private cropperEl: HTMLElement;
+  public cropperEl: HTMLElement;
   private containerEl: HTMLElement;
   private imageEl: HTMLImageElement;
   private imageClippedEl: HTMLImageElement;
@@ -110,6 +117,7 @@ export default class CropprCore {
     this.attachHandlerEvents();
     this.attachRegionEvents();
     this.attachOverlayEvents();
+    this.registerEventBusListeners();
 
     // Bootstrap this cropper instance
     this.box = this.initializeBox(this.options);
@@ -120,6 +128,29 @@ export default class CropprCore {
     if (this.options.onInitialize !== null) {
       this.options.onInitialize(this);
     }
+  }
+
+  /**
+   * Listen for event bus events.
+   */
+  private registerEventBusListeners() {
+    this.eventBus.addEventListener('cropstart', () => {
+      if (typeof this.options.onCropStart === 'function') {
+        this.options.onCropStart(this.getValue());
+      }
+    });
+
+    this.eventBus.addEventListener('cropmove', () => {
+      if (typeof this.options.onCropMove === 'function') {
+        this.options.onCropMove(this.getValue());
+      }
+    });
+
+    this.eventBus.addEventListener('cropend', () => {
+      if (typeof this.options.onCropEnd === 'function') {
+        this.options.onCropEnd(this.getValue());
+      }
+    });
   }
 
   /**
@@ -180,6 +211,8 @@ export default class CropprCore {
     // And then finally insert it into the document
     targetEl.parentElement.replaceChild(this.containerEl, targetEl);
   }
+
+  
 
   /**
    * Changes the image src.
@@ -290,10 +323,30 @@ export default class CropprCore {
   }
 
   /**
+   * Replace the box model.
+   */
+  public updateBox(newBox: Box | null) {
+    if (newBox === null) {
+      return;
+    }
+    this.box = newBox;
+    this.redraw();
+  }
+
+  /**
+   * Dispatch a new CustomEvent to the event bus.
+   */
+  private dispatchToEventBus(eventName: string, eventArgs: any) {
+    this.eventBus.dispatchEvent(new CustomEvent(eventName, {
+      detail: eventArgs,
+    }));
+  }
+
+  /**
    * Attach listeners for events emitted by the handles.
    * Enables resizing of the region element.
    */
-  attachHandlerEvents() {
+  private attachHandlerEvents() {
     const eventBus = this.eventBus;
     eventBus.addEventListener('handlestart', this.onHandleMoveStart.bind(this));
     eventBus.addEventListener('handlemove', this.onHandleMoveMoving.bind(this));
@@ -304,45 +357,28 @@ export default class CropprCore {
    * Attach event listeners for the crop region element.
    * Enables dragging/moving of the region element.
    */
-  attachRegionEvents() {
-    const eventBus = this.eventBus;
-    const self = this;
-
-    this.regionEl.addEventListener('mousedown', onMouseDown);
-    eventBus.addEventListener('regionstart', this.onRegionMoveStart.bind(this));
-    eventBus.addEventListener('regionmove', this.onRegionMoveMoving.bind(this));
-    eventBus.addEventListener('regionend', this.onRegionMoveEnd.bind(this));
-
-    function onMouseDown(e) {
+  private attachRegionEvents() {
+    const onMouseDown = (e: MouseEvent) => {
       e.stopPropagation();
       document.addEventListener('mouseup', onMouseUp);
       document.addEventListener('mousemove', onMouseMove);
-
-      // Notify parent
-      eventBus.dispatchEvent(new CustomEvent('regionstart', {
-        detail: { mouseX: e.clientX, mouseY: e.clientY }
-      }));
+      this.dispatchToEventBus('regionstart', { mouseX: e.clientX, mouseY: e.clientY });
     }
 
-    function onMouseMove(e) {
-      e.stopPropagation();
-
-      // Notify parent
-      eventBus.dispatchEvent(new CustomEvent('regionmove', {
-        detail: { mouseX: e.clientX, mouseY: e.clientY }
-      }));
-    }
-
-    function onMouseUp(e) {
+    const onMouseUp = (e: MouseEvent) => {
       e.stopPropagation();
       document.removeEventListener('mouseup', onMouseUp);
       document.removeEventListener('mousemove', onMouseMove);
-
-      // Notify parent
-      eventBus.dispatchEvent(new CustomEvent('regionend', {
-        detail: { mouseX: e.clientX, mouseY: e.clientY }
-      }));
+      this.dispatchToEventBus('regionend', { mouseX: e.clientX, mouseY: e.clientY });
     }
+
+    const onMouseMove = (e: MouseEvent) => {
+      e.stopPropagation();
+      this.dispatchToEventBus('regionmove', { mouseX: e.clientX, mouseY: e.clientY });
+    }
+
+    this.regionEl.addEventListener('mousedown', onMouseDown);
+    return new onRegionMoveEngine(this.eventBus, this);
   }
 
   /**
@@ -531,79 +567,6 @@ export default class CropprCore {
       this.options.onCropEnd(this.getValue());
     }
   }
-
-  /**
-   * EVENT HANDLER
-   * Executes when user starts moving the crop region.
-   */
-  onRegionMoveStart(e) {
-    let { mouseX, mouseY } = e.detail;
-
-    // Calculate mouse's position in relative to the container
-    let container = this.cropperEl.getBoundingClientRect();
-    mouseX = mouseX - container.left;
-    mouseY = mouseY - container.top;
-
-    this.currentMove = {
-      offsetX: mouseX - this.box.x1,
-      offsetY: mouseY - this.box.y1
-    }
-
-    // Trigger callback
-    if (this.options.onCropStart !== null) {
-      this.options.onCropStart(this.getValue());
-    }
-  }
-
-  /**
-   * EVENT HANDLER
-   * Executes when user moves the crop region.
-   */
-  onRegionMoveMoving(e) {
-    let { mouseX, mouseY } = e.detail;
-    let { offsetX, offsetY } = this.currentMove;
-
-    // Calculate mouse's position in relative to the container
-    let container = this.cropperEl.getBoundingClientRect();
-    mouseX = mouseX - container.left;
-    mouseY = mouseY - container.top;
-
-    this.box.move(mouseX - offsetX, mouseY - offsetY);
-
-    // Ensure box is within the boundaries
-    if (this.box.x1 < 0) {
-      this.box.move(0, null);
-    }
-    if (this.box.x2 > container.width) {
-      this.box.move(container.width - this.box.width(), null);
-    }
-    if (this.box.y1 < 0) {
-      this.box.move(null, 0);
-    }
-    if (this.box.y2 > container.height) {
-      this.box.move(null, container.height - this.box.height());
-    }
-
-    // Update visuals
-    this.redraw();
-
-    // Trigger callback
-    if (this.options.onCropMove !== null) {
-      this.options.onCropMove(this.getValue());
-    }
-  }
-
-  /**
-   * EVENT HANDLER
-   * Executes when user stops moving the crop region (mouse up).
-   */
-  onRegionMoveEnd(e) {
-    // Trigger callback
-    if (this.options.onCropEnd !== null) {
-      this.options.onCropEnd(this.getValue());
-    }
-  }
-
 
   /**
    * Calculate the value of the crop region.
