@@ -17,7 +17,7 @@ class Croppr extends CropprCore {
   /**
    * @constructor
    */
-  constructor(element: Element, options: CropprOptions, _deferred = false) {
+  constructor(element: HTMLElement | string, options: CropprOptions, _deferred = false) {
     super(element, options, _deferred);
   }
 
