@@ -15,7 +15,7 @@ const banner = `/**
 `;
 
 export default {
-  entry: 'src/index.js',
+  entry: 'src/croppr.ts',
   plugins: [
     json(),
     typescript(),

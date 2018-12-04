@@ -16,7 +16,7 @@ const banner = `/**
 
 // TODO: Multiple bundles (minifed and unminified)
 export default {
-  entry: 'src/index.js',
+  entry: 'src/croppr.ts',
   plugins: [ json(), typescript(), babel(), uglify() ],
   format: 'umd',
   moduleName: 'Croppr',
