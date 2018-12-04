@@ -5,6 +5,7 @@
 
 import Handle from './lib/handle';
 import Box from './lib/box';
+import * as Utils from './utils';
 import enableTouch from './touch';
 
 /**
@@ -103,7 +104,7 @@ export default class CropprCore {
     this.containerEl = document.createElement('div');
     this.containerEl.className = 'croppr-container';
     this.eventBus = this.containerEl;
-    enableTouch(this.containerEl);
+    Utils.translateTouchToMouseEvents(this.containerEl);
 
     // Create cropper element
     this.cropperEl = document.createElement('div');
