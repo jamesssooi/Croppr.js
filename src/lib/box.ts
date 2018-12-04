@@ -1,30 +1,42 @@
 /**
- * Box component
+ * Represents a point of origin.
  */
-export default class Box {
+interface OriginPoint extends Array<number> {
+  0: number
+  1: number
+}
+
+
+/**
+ * Represents the axis to grow.
+ */
+type GrowSide = 'width' | 'height';
+
+
+/**
+ * Represents a crop region.
+ */
+class Box {
+
+  public x1: number;
+  public y1: number;
+  public x2: number;
+  public y2: number;
+
   /**
-   * Creates a new Box instance.
    * @constructor
-   * @param {Number} x1
-   * @param {Number} y1
-   * @param {Number} x2
-   * @param {Number} y2
    */
-  constructor(x1, y1, x2, y2) {
+  constructor(x1: number, y1: number, x2: number, y2: number) {
     this.x1 = x1;
     this.y1 = y1;
     this.x2 = x2;
     this.y2 = y2;
   }
 
-  /** 
+  /**
    * Sets the new dimensions of the box.
-   * @param {Number} x1
-   * @param {Number} y1
-   * @param {Number} x2
-   * @param {Number} y2
    */
-  set(x1 = null, y1 = null, x2 = null, y2 = null) {
+  public set(x1: number = null, y1: number = null, x2: number = null, y2: number = null) {
     this.x1 = x1 == null ? this.x1 : x1;
     this.y1 = y1 == null ? this.y1 : y1;
     this.x2 = x2 == null ? this.x2 : x2;
@@ -34,46 +46,35 @@ export default class Box {
 
   /**
    * Calculates the width of the box.
-   * @returns {Number}
    */
-  width() {
+  public width() {
     return Math.abs(this.x2 - this.x1);
   }
 
   /**
    * Calculates the height of the box.
-   * @returns {Number}
    */
-  height() {
+  public height() {
     return Math.abs(this.y2 - this.y1);
   }
 
   /**
    * Resizes the box to a new size.
-   * @param {Number} newWidth
-   * @param {Number} newHeight
-   * @param {Array} [origin] The origin point to resize from.
-   *      Defaults to [0, 0] (top left).
    */
-  resize(newWidth, newHeight, origin = [0, 0]) {
+  public resize(newWidth: number, newHeight: number, origin: OriginPoint) {
     const fromX = this.x1 + (this.width() * origin[0]);
     const fromY = this.y1 + (this.height() * origin[1]);
-
     this.x1 = fromX - (newWidth * origin[0]);
     this.y1 = fromY - (newHeight * origin[1]);
     this.x2 = this.x1 + newWidth;
     this.y2 = this.y1 + newHeight;
-
     return this;
   }
 
   /**
    * Scale the box by a factor.
-   * @param {Number} factor
-   * @param {Array} [origin] The origin point to resize from.
-   *      Defaults to [0, 0] (top left).
    */
-  scale(factor, origin = [0, 0]) {
+  public scale(factor: number, origin: OriginPoint = [0, 0]) {
     const newWidth = this.width() * factor;
     const newHeight = this.height() * factor;
     this.resize(newWidth, newHeight, origin);
@@ -83,12 +84,11 @@ export default class Box {
   /**
    * Move the box to the specified coordinates.
    */
-  move(x = null, y = null) {
-    let width = this.width();
-    let height = this.height();
+  public move(x: number = null, y: number = null) {
+    const width = this.width();
+    const height = this.height();
     x = x === null ? this.x1 : x;
     y = y === null ? this.y1 : y;
-
     this.x1 = x;
     this.y1 = y;
     this.x2 = x + width;
@@ -98,10 +98,8 @@ export default class Box {
 
   /**
    * Get relative x and y coordinates of a given point within the box.
-   * @param {Array} point The x and y ratio position within the box.
-   * @returns {Array} The x and y coordinates [x, y].
    */
-  getRelativePoint(point = [0, 0]) {
+  getRelativePoint(point: OriginPoint = [0, 0]) {
     const x = this.width() * point[0];
     const y = this.height() * point[1];
     return [x, y];
@@ -109,10 +107,8 @@ export default class Box {
 
   /**
    * Get absolute x and y coordinates of a given point within the box.
-   * @param {Array} point The x and y ratio position within the box.
-   * @returns {Array} The x and y coordinates [x, y].
    */
-  getAbsolutePoint(point = [0, 0]) {
+  public getAbsolutePoint(point: OriginPoint = [0, 0]) {
     const x = this.x1 + this.width() * point[0];
     const y = this.y1 + this.height() * point[1];
     return [x, y];
@@ -120,16 +116,15 @@ export default class Box {
 
   /**
    * Constrain the box to a fixed ratio.
-   * @param {Number} ratio
-   * @param {Array} [origin] The origin point to resize from.
-   *     Defaults to [0, 0] (top left).
-   * @param {String} [grow] The axis to grow to maintain the ratio.
-   *     Defaults to 'height'.
+   *
+   * `grow` is a string enum specifiying which axis should the box grow to
+   * constrain to the ratio.
    */
-  constrainToRatio(ratio, origin = [0, 0], grow = 'height') {
-    if (ratio === null) { return; }
-    const width = this.width();
-    const height = this.height();
+  public constrainToRatio(ratio: number = null, origin: OriginPoint = [0, 0], grow: GrowSide = 'height') {
+    if (ratio === null) {
+      return;
+    }
+
     switch (grow) {
       case 'height': // Grow height only
         this.resize(this.width(), this.width() * ratio, origin);
@@ -146,13 +141,8 @@ export default class Box {
 
   /**
    * Constrain the box within a boundary.
-   * @param {Number} boundaryWidth
-   * @param {Number} boundaryHeight
-   * @param {Array} [origin] The origin point to resize from.
-   *     Defaults to [0, 0] (top left).
    */
-  constrainToBoundary(boundaryWidth, boundaryHeight, origin = [0, 0]) {
-
+  public constrainToBoundary(boundaryWidth: number, boundaryHeight: number, origin: OriginPoint = [0, 0]) {
     // Calculate the maximum sizes for each direction of growth
     const [originX, originY] = this.getAbsolutePoint(origin);
     const maxIfLeft = originX
@@ -193,18 +183,15 @@ export default class Box {
 
   /**
    * Constrain the box to a maximum/minimum size.
-   * @param {Number} [maxWidth]
-   * @param {Number} [maxHeight]
-   * @param {Number} [minWidth]
-   * @param {Number} [minHeight]
-   * @param {Array} [origin] The origin point to resize from.
-   *     Defaults to [0, 0] (top left).
-   * @param {Number} [ratio] Ratio to maintain.
    */
-  constrainToSize(maxWidth = null, maxHeight = null,
-    minWidth = null, minHeight = null,
-    origin = [0, 0], ratio = null) {
-
+  public constrainToSize(
+    maxWidth: number = null,
+    maxHeight: number = null,
+    minWidth: number = null,
+    minHeight: number = null,
+    origin: OriginPoint = [0, 0],
+    ratio: number = null
+  ) {
     // Calculate new max/min widths & heights that constrains to the ratio
     if (ratio) {
       if (ratio > 1) {
@@ -243,3 +230,5 @@ export default class Box {
     return this;
   }
 }
+
+export default Box;

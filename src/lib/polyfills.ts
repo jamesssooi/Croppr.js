@@ -13,7 +13,7 @@
   }
 
   if (!window.requestAnimationFrame)
-    window.requestAnimationFrame = function (callback, element) {
+    window.requestAnimationFrame = function (callback) {
       var currTime = new Date().getTime();
       var timeToCall = Math.max(0, 16 - (currTime - lastTime));
       var id = window.setTimeout(function () { callback(currTime + timeToCall); },
@@ -31,7 +31,7 @@
 // CustomEvents polyfill
 (function () {
 
-  if (typeof window.CustomEvent === "function") return false;
+  if (typeof window['CustomEvent'] === "function") return false;
 
   function CustomEvent(event, params) {
     params = params || { bubbles: false, cancelable: false, detail: undefined };
@@ -40,9 +40,9 @@
     return evt;
   }
 
-  CustomEvent.prototype = window.Event.prototype;
+  CustomEvent.prototype = window['Event'].prototype;
 
-  window.CustomEvent = CustomEvent;
+  window['CustomEvent'] = CustomEvent;
 })();
 
 // MouseEvents polyfill
@@ -65,5 +65,5 @@
 
   MouseEvent.prototype = Event.prototype;
 
-  window.MouseEvent = MouseEvent;
+  window['MouseEvent'] = MouseEvent;
 })(window);

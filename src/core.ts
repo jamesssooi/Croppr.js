@@ -2,10 +2,10 @@
  * CropprCore
  * Here lies the main logic.
  */
-
-import Handle from './handle';
-import Box from './box';
-import enableTouch from './touch';
+import { CropprOptions, Point, Size, HandleConstraints } from './types';
+import Handle from './lib/handle';
+import Box from './lib/box';
+import * as Utils from './utils';
 
 /**
  * Define a list of handles to create.
@@ -32,16 +32,43 @@ const HANDLES = [
  * Core class for Croppr containing most of its functional logic.
  */
 export default class CropprCore {
-  constructor(element, options, deferred = false) {
+
+  public options: CropprOptions;
+  public box: Box;
+
+  private _initialized: boolean;
+  private _restore: any;
+  private eventBus: HTMLElement;
+  private handles: Handle[];
+  private _scaleFactorX: number;
+  private _scaleFactorY: number;
+  private activeHandle: any;
+  private currentMove: any;
+
+  // Elements
+  private cropperEl: HTMLElement;
+  private containerEl: HTMLElement;
+  private imageEl: HTMLImageElement;
+  private imageClippedEl: HTMLImageElement;
+  private regionEl: HTMLElement;
+  private overlayEl: HTMLElement;
+
+  /**
+   * @constructor
+   */
+  constructor(element: HTMLElement | string, options: CropprOptions, deferred = false) {
 
     // Parse options
     this.options = CropprCore.parseOptions(options || {});
 
     // Get target img element
-    if (!element.nodeName) {
-      element = document.querySelector(element);
-      if (element == null) { throw 'Unable to find element.' }
+    if (!Utils.isElement(element)) {
+      element = <HTMLElement> document.querySelector(element);
+      if (element == null) {
+        throw 'Unable to find element.';
+      }
     }
+
     if (!element.getAttribute('src')) {
       throw 'Image src not provided.'
     }
@@ -55,7 +82,7 @@ export default class CropprCore {
 
     // Wait until image is loaded before proceeding
     if (!deferred) {
-      if (element.width === 0 || element.height === 0) {
+      if (element['width'] === 0 || element['height'] === 0) {
         element.onload = () => { this.initialize(element); }
       } else {
         this.initialize(element);
@@ -103,7 +130,7 @@ export default class CropprCore {
     this.containerEl = document.createElement('div');
     this.containerEl.className = 'croppr-container';
     this.eventBus = this.containerEl;
-    enableTouch(this.containerEl);
+    Utils.translateTouchToMouseEvents(this.containerEl);
 
     // Create cropper element
     this.cropperEl = document.createElement('div');
@@ -116,7 +143,7 @@ export default class CropprCore {
     this.imageEl.className = 'croppr-image';
 
     // Create clipped image element
-    this.imageClippedEl = this.imageEl.cloneNode();
+    this.imageClippedEl = <HTMLImageElement> this.imageEl.cloneNode();
     this.imageClippedEl.className = 'croppr-imageClipped';
 
     // Create region box element
@@ -132,12 +159,14 @@ export default class CropprCore {
     handleContainerEl.className = 'croppr-handleContainer';
     this.handles = [];
     for (let i = 0; i < HANDLES.length; i++) {
-      const handle = new Handle(HANDLES[i].position,
-        HANDLES[i].constraints,
+      const handle = new Handle(
+        <Point> HANDLES[i].position,
+        <HandleConstraints> HANDLES[i].constraints,
         HANDLES[i].cursor,
-        this.eventBus);
+        this.eventBus
+      );
       this.handles.push(handle);
-      handleContainerEl.appendChild(handle.el);
+      handleContainerEl.appendChild(handle.element);
     }
 
     // And then we piece it all together!
@@ -247,15 +276,15 @@ export default class CropprCore {
         let handle = this.handles[i];
 
         // Calculate handle position
-        const handleWidth = handle.el.offsetWidth;
-        const handleHeight = handle.el.offsetHeight;
+        const handleWidth = handle.element.offsetWidth;
+        const handleHeight = handle.element.offsetHeight;
         const left = x1 + (width * handle.position[0]) - handleWidth / 2;
         const top = y1 + (height * handle.position[1]) - handleHeight / 2;
 
         // Apply new position. The positional values are rounded to
         // prevent subpixel positions which can result in a blurry element
-        handle.el.style.transform = `translate(${Math.round(left)}px, ${Math.round(top)}px)`;
-        handle.el.style.zIndex = foregroundHandleIndex == i ? 5 : 4;
+        handle.element.style.transform = `translate(${Math.round(left)}px, ${Math.round(top)}px)`;
+        handle.element.style.zIndex = foregroundHandleIndex == i ? '5' : '4';
       }
     });
   }
@@ -384,7 +413,7 @@ export default class CropprCore {
     // The origin point is the point where the box is scaled from.
     // This is usually the opposite side/corner of the active handle.
     const originPoint = [1 - handle.position[0], 1 - handle.position[1]];
-    let [originX, originY] = this.box.getAbsolutePoint(originPoint);
+    let [originX, originY] = this.box.getAbsolutePoint(<Point> originPoint);
 
     this.activeHandle = { handle, originPoint, originX, originY }
 
