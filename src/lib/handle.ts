@@ -48,7 +48,7 @@ class Handle {
     document.addEventListener('mouseup', this.onMouseUp);
     document.addEventListener('mousemove', this.onMouseMove);
     this.eventBus.dispatchEvent(new CustomEvent('handlestart', {
-      detail: { handle: self }
+      detail: { handle: this }
     }));
   }
 
@@ -60,7 +60,7 @@ class Handle {
     document.removeEventListener('mouseup', this.onMouseUp);
     document.removeEventListener('mousemove', this.onMouseMove);
     this.eventBus.dispatchEvent(new CustomEvent('handleend', {
-      detail: { handle: self }
+      detail: { handle: this }
     }));
   }
 
