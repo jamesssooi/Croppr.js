@@ -2,11 +2,10 @@
  * CropprCore
  * Here lies the main logic.
  */
-
+import './lib/polyfills';
 import Handle from './lib/handle';
 import Box from './lib/box';
 import * as Utils from './utils';
-import enableTouch from './touch';
 
 /**
  * Define a list of handles to create.
