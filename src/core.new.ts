@@ -106,6 +106,10 @@ class Core {
     return container;
   }
 
+  private attachDOMEvents(eventBus: EventBus) {
+    
+  }
+
   /**
    * Get all handles and parse its options.
    */

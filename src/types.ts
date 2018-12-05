@@ -1,6 +1,7 @@
 import Croppr from './croppr';
 import CropprCore from './core';
 import Box from './lib/box';
+import EventBus from './lib/event-bus';
 
 export interface CropprOptions {
   aspectRatio?: number;
@@ -58,4 +59,9 @@ export interface HandleConstraints extends Array<number> {
   1: number
   2: number
   3: number
+}
+
+export interface DOMEventBuilder {
+  attach(element: HTMLElement)
+  detach(): void
 }
