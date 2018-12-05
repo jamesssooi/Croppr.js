@@ -56,11 +56,11 @@ class Core {
    * Constructs and returns Croppr's DOM elements.
    */
   private constructDOMTree(eventBus: EventBus, imageSrc: string, imageAlt: string) {
-    const root = DOMBuilders.createRootDOM();
-    DOMBuilders.createImageDOM(root, imageSrc, imageAlt);
-    DOMBuilders.createCropRegionDOM(root);
-    DOMBuilders.createOverlayDOM(root);
-    DOMBuilders.createHandlesDOM(root);
+    const root = DOMBuilders.createRootDOM(eventBus);
+    DOMBuilders.createImageDOM(root, eventBus, imageSrc, imageAlt);
+    DOMBuilders.createCropRegionDOM(root, eventBus);
+    DOMBuilders.createOverlayDOM(root, eventBus);
+    DOMBuilders.createHandlesDOM(root, eventBus);
     return root;
   }
 
