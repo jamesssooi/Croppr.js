@@ -13,6 +13,7 @@ export default function createHandlesDOM(root: HTMLElement, eventBus: EventBus):
     element.className = 'croppr-handle';
     element.style.cursor = handle.cursor;
     element.setAttribute('data-constraints', JSON.stringify(handle.constraints));
+    element.setAttribute('data-position', JSON.stringify(handle.position));
     container.appendChild(element);
   });
 
