@@ -41,25 +41,11 @@ class Core {
    * Constructs and returns Croppr's DOM elements.
    */
   private constructDOMTree(imageSrc: string, imageAlt: string) {
-    const root = document.createElement('div');
-    root.className = 'croppr-container';
-    root.innerHTML = `
-      <div class="croppr">
-        <img src="${imageSrc}" class="croppr-image" alt="${imageAlt}"/>
-        <img src="${imageSrc}" class="croppr-imageClipped" role="presentation"/>
-        <div class="croppr-region"></div>
-        <div class="croppr-overlay"></div>
-        <div class="croppr-handleContainer"></div>
-      </div>`;
-
-
-    // Create and insert handles
-    this.handles = this.createHandles();
-    this.handles.forEach(h => {
-      const handleContainer = root.querySelector('.croppr-handleContainer');
-      handleContainer.appendChild(h.element);
-    });
-
+    const root = DOMBuilders.createRootDOM();
+    DOMBuilders.createImageDOM(root, imageSrc, imageAlt);
+    DOMBuilders.createCropRegionDOM(root);
+    DOMBuilders.createOverlayDOM(root);
+    DOMBuilders.createHandlesDOM(root);
     return root;
   }
 
