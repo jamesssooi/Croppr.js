@@ -563,8 +563,7 @@ var CropprCore = function () {
     this._restore = {
       parent: element.parentNode,
       element: element
-    };
-    if (!deferred) {
+    };if (!deferred) {
       if (element.width === 0 || element.height === 0) {
         element.onload = function () {
           _this.initialize(element);
@@ -789,8 +788,8 @@ var CropprCore = function () {
           _box$getAbsolutePoint2 = slicedToArray(_box$getAbsolutePoint, 2),
           originX = _box$getAbsolutePoint2[0],
           originY = _box$getAbsolutePoint2[1];
-      this.activeHandle = { handle: handle, originPoint: originPoint, originX: originX, originY: originY };
-      if (this.options.onCropStart !== null) {
+      this.activeHandle = { handle: handle, originPoint: originPoint, originX: originX, originY: originY
+      };if (this.options.onCropStart !== null) {
         this.options.onCropStart(this.getValue());
       }
     }
@@ -887,8 +886,7 @@ var CropprCore = function () {
       this.currentMove = {
         offsetX: mouseX - this.box.x1,
         offsetY: mouseY - this.box.y1
-      };
-      if (this.options.onCropStart !== null) {
+      };if (this.options.onCropStart !== null) {
         this.options.onCropStart(this.getValue());
       }
     }
@@ -982,8 +980,7 @@ var CropprCore = function () {
         onCropStart: null,
         onCropMove: null,
         onCropEnd: null
-      };
-      var aspectRatio = null;
+      };var aspectRatio = null;
       if (opts.aspectRatio !== undefined) {
         if (typeof opts.aspectRatio === 'number') {
           aspectRatio = opts.aspectRatio;
@@ -1180,9 +1177,43 @@ var Croppr$1 = function (_CropprCore) {
       }
       return this;
     }
+  }, {
+    key: 'getDataImage',
+    value: function getDataImage(extension, cb) {
+      var img = new Image();
+      var value = this.getValue();
+      var canvas = document.createElement('canvas');
+      canvas.width = value.width;
+      canvas.height = value.height;
+      var ctx = canvas.getContext('2d');
+      img.setAttribute('crossOrigin', 'anonymous');
+      img.onload = function () {
+        ctx.drawImage(img, -value.x, -value.y);
+        var cropImage = canvas.toDataURL(extension || 'image/jpeg');
+        var blob = dataURLtoBlob(cropImage);
+        if (typeof cb === 'function' && cropImage) {
+          cb(cropImage, blob);
+        }
+        canvas.remove();
+        img.remove();
+      };
+      img.src = this.imageEl.src;
+      return this;
+    }
   }]);
   return Croppr;
 }(CropprCore);
+function dataURLtoBlob(dataurl) {
+  var arr = dataurl.split(','),
+      mime = arr[0].match(/:(.*?);/)[1],
+      bstr = atob(arr[1]),
+      n = bstr.length,
+      u8arr = new Uint8Array(n);
+  while (n--) {
+    u8arr[n] = bstr.charCodeAt(n);
+  }
+  return new Blob([u8arr], { type: mime });
+}
 
 return Croppr$1;
 

@@ -115,4 +115,44 @@ export default class Croppr extends CropprCore {
     }
     return this;
   }
+
+  getDataImage(extension, cb) {
+    let img = new Image();
+    const value = this.getValue();
+    const canvas = document.createElement('canvas');
+          canvas.width = value.width;
+          canvas.height = value.height;
+    const ctx = canvas.getContext('2d');
+
+    img.setAttribute('crossOrigin', 'anonymous');
+    img.onload = function() {
+      ctx.drawImage(img, -value.x, -value.y);
+      const cropImage = canvas.toDataURL(extension || 'image/jpeg');
+      const blob = dataURLtoBlob(cropImage);
+
+      if (typeof cb === 'function' && cropImage) {
+        cb(cropImage, blob);
+      }
+
+      canvas.remove();
+      img.remove();
+    }
+
+    img.src = this.imageEl.src;
+
+    return this;
+  }
+}
+
+
+/**
+ * HELPER FUNCTIONS
+ */
+function dataURLtoBlob(dataurl) {
+  var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
+      bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+  while(n--){
+      u8arr[n] = bstr.charCodeAt(n);
+  }
+  return new Blob([u8arr], {type:mime});
 }

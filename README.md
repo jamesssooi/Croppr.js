@@ -220,6 +220,10 @@ Scales the crop region by a factor. `origin` is an optional argument that specif
 
 Resets the crop region to its original position and size. Returns the Croppr instance.
 
+Get cropped source image in format blob
+
+#### getDataImage()
+
 - - -
 
 [![Build Status](https://travis-ci.org/jamesssooi/Croppr.js.svg?branch=master)](https://travis-ci.org/jamesssooi/Croppr.js)
