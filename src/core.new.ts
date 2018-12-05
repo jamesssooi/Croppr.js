@@ -2,7 +2,7 @@ import { CropprOptions, Size } from "./types";
 import EventBus from './lib/event-bus';
 import * as CONST from './lib/constants';
 import * as Utils from './utils';
-import * as DOMBuilders from './dom';
+import * as DOMBuilders from './dom-builders';
 import Box from "./lib/box";
 
 interface Options {
