@@ -33,7 +33,6 @@ class Core {
   }
 
   private options: Options;
-  private _rawOptions: Options;
   private handles: { element: HTMLElement, constraints: number[], position: number[] }[];
   private eventBus: EventBus;
   private _oldElement: Element;
@@ -74,26 +73,14 @@ class Core {
 
     // Create DOM
     this._oldElement = element;
-    const imageSrc = element.getAttribute('src');
-    const imageAlt = element.getAttribute('alt');
-    const cropprDOM = this.constructDOMTree(this.eventBus, imageSrc, imageAlt);
+    const cropprDOM = this.constructDOMTree(this.eventBus, element.getAttribute('src'), element.getAttribute('alt'));
     element.parentElement.replaceChild(cropprDOM, element);
     this.element = cropprDOM;
 
     // Store handles for easier access later
-    const handles = [];
-    cropprDOM.querySelectorAll('.croppr-handle').forEach(handle => {
-      handles.push({
-        element: <HTMLElement> handle,
-        position: JSON.parse(handle.getAttribute('data-position')),
-        constraints: JSON.parse(handle.getAttribute('data-constraints')),
-      });
-      handle.removeAttribute('data-constraints');
-    });
-    this.handles = handles;
+    this.handles = this.getHandles(this.element);
 
     // Process options
-    this._rawOptions = { ...options };
     const mergedOptions = { ...Core.defaultOptions, ...options };
     this.options = this.convertOptionValuesToAbsolute(mergedOptions, cropprDOM);
 
@@ -117,6 +104,22 @@ class Core {
 
     container.appendChild(root);
     return container;
+  }
+
+  /**
+   * Get all handles and parse its options.
+   */
+  private getHandles(context: Element) {
+    const handles = [];
+    context.querySelectorAll('.croppr-handle').forEach(handle => {
+      handles.push({
+        element: <HTMLElement> handle,
+        position: JSON.parse(handle.getAttribute('data-position')),
+        constraints: JSON.parse(handle.getAttribute('data-constraints')),
+      });
+      handle.removeAttribute('data-constraints');
+    });
+    return handles;
   }
 
   /**
@@ -179,6 +182,23 @@ class Core {
   }
 
   /**
+   * Returns the first `Element` within Croppr's DOM that matches the specified
+   * selector. This method is memoized.
+   */
+  private querySelector(selector: string) {
+    if (this._querySelectorCache.hasOwnProperty(selector)) {
+      return this._querySelectorCache[selector];
+    }
+
+    const element = <HTMLElement> this.element.querySelector(selector);
+    if (element !== null) {
+      this._querySelectorCache[selector] = element;
+    }
+
+    return element;
+  }
+
+  /**
    * Redraw elements according to the internal box model.
    */
   public redraw() {
@@ -238,23 +258,6 @@ class Core {
   }
 
   private _querySelectorCache: { [key: string]: HTMLElement } = {};
-
-  /**
-   * Returns the first `Element` within Croppr's DOM that matches the specified
-   * selector. This method is memoized.
-   */
-  private querySelector(selector: string) {
-    if (this._querySelectorCache.hasOwnProperty(selector)) {
-      return this._querySelectorCache[selector];
-    }
-
-    const element = <HTMLElement> this.element.querySelector(selector);
-    if (element !== null) {
-      this._querySelectorCache[selector] = element;
-    }
-
-    return element;
-  }
 
 }
 
