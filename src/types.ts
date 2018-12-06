@@ -61,7 +61,9 @@ export interface HandleConstraints extends Array<number> {
   3: number
 }
 
-export interface DOMEventBuilder {
-  attach(element: HTMLElement)
-  detach(): void
+export interface HandleEvent {
+  mouseX: number
+  mouseY: number
+  handlePosition: number[]
+  handleConstraints: number[]
 }

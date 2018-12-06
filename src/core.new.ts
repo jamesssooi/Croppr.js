@@ -1,8 +1,9 @@
-import { CropprOptions, Size } from "./types";
 import EventBus from './lib/event-bus';
 import * as CONST from './lib/constants';
 import * as Utils from './utils';
 import * as DOMBuilders from './dom-builders';
+import * as DOMEvents from './dom-events';
+import * as EventObservers from './event-observers';
 import Box from "./lib/box";
 
 interface Options {
@@ -32,17 +33,19 @@ class Core {
     onCropEnd: null,
   }
 
-  private options: Options;
+  public options: Options;
+  public state: any;
   private handles: { element: HTMLElement, constraints: number[], position: number[] }[];
   private eventBus: EventBus;
   private _oldElement: Element;
   private element: HTMLElement;
+  private unbindFns: Function[];
 
   /**
    * The crop region's internal model. Any modification to the crop region
    * should be made to this `box` variable.
    */
-  private box: Box;
+  public box: Box;
 
   /**
    * @constructor
@@ -69,7 +72,7 @@ class Core {
       return;
     }
 
-    this.eventBus = new EventBus();
+    this.eventBus = new EventBus(this);
 
     // Create DOM
     this._oldElement = element;
@@ -77,8 +80,9 @@ class Core {
     element.parentElement.replaceChild(cropprDOM, element);
     this.element = cropprDOM;
 
-    // Store handles for easier access later
     this.handles = this.getHandles(this.element);
+    this.unbindFns = this.attachDOMEvents(this.eventBus);
+    this.attachEventBusObservers(this.eventBus);
 
     // Process options
     const mergedOptions = { ...Core.defaultOptions, ...options };
@@ -106,9 +110,6 @@ class Core {
     return container;
   }
 
-  private attachDOMEvents(eventBus: EventBus) {
-    
-  }
 
   /**
    * Get all handles and parse its options.
@@ -121,9 +122,31 @@ class Core {
         position: JSON.parse(handle.getAttribute('data-position')),
         constraints: JSON.parse(handle.getAttribute('data-constraints')),
       });
-      handle.removeAttribute('data-constraints');
     });
     return handles;
+  }
+
+  /**
+   * Attach DOM event listeners.
+   */
+  private attachDOMEvents(eventBus: EventBus) {
+    const unbindHandles = this.handles.map(h => {
+      return DOMEvents.attachHandleEvents(h.element, eventBus);
+    });
+    return [ ...unbindHandles ];
+  }
+
+  /**
+   * Attach event bus event listeners.
+   */
+  private attachEventBusObservers(eventBus: EventBus) {
+    eventBus.on('onHandleStart', EventObservers.onHandleStart);
+    eventBus.on('onHandleMove', EventObservers.onHandleMove);
+    eventBus.on('onHandleEnd', EventObservers.onHandleEnd);
+    eventBus.on('updateBox', box => {
+      this.box = box;
+      this.redraw();
+    });
   }
 
   /**
@@ -185,11 +208,13 @@ class Core {
     return box;
   }
 
+  private _querySelectorCache: { [key: string]: HTMLElement } = {};
+
   /**
    * Returns the first `Element` within Croppr's DOM that matches the specified
    * selector. This method is memoized.
    */
-  private querySelector(selector: string) {
+  public querySelector(selector: string) {
     if (this._querySelectorCache.hasOwnProperty(selector)) {
       return this._querySelectorCache[selector];
     }
@@ -261,7 +286,13 @@ class Core {
     return -2 * quadrant + 8;
   }
 
-  private _querySelectorCache: { [key: string]: HTMLElement } = {};
+  public getInternalState() {
+    return { ...this.state };
+  }
+
+  public setInternalState(newState: any) {
+    this.state = { ...this.state, ...newState };
+  }
 
 }
 
