@@ -468,16 +468,28 @@ export default class CropprCore {
       box.constrainToRatio(ratio, origin, ratioMode);
     }
 
+    // Constrain to boundary
+    const parentWidth = this.cropperEl.offsetWidth;
+    const parentHeight = this.cropperEl.offsetHeight;
+    box.constrainToBoundary(parentWidth, parentHeight, origin);
+
     // Maintain minimum/maximum size
+    // Do this after the boundary check to enforce minSize
     const min = this.options.minSize;
     const max = this.options.maxSize;
     box.constrainToSize(max.width, max.height, min.width,
       min.height, origin, this.options.aspectRatio);
 
-    // Constrain to boundary
-    const parentWidth = this.cropperEl.offsetWidth;
-    const parentHeight = this.cropperEl.offsetHeight;
-    box.constrainToBoundary(parentWidth, parentHeight, origin);
+    // Discard the movevement if the result falls outside the container
+    // See [#12](https://github.com/jamesssooi/Croppr.js/issues/12)
+    if (
+      box.x1 < 0 ||
+      box.y1 < 0 ||
+      box.x2 > container.width ||
+      box.y2 > container.height
+    ) {
+      return;
+    }
 
     // Finally, update the visuals (border, handles, clipped image, etc)
     this.box = box;

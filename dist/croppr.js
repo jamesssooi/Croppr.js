@@ -563,8 +563,7 @@ var CropprCore = function () {
     this._restore = {
       parent: element.parentNode,
       element: element
-    };
-    if (!deferred) {
+    };if (!deferred) {
       if (element.width === 0 || element.height === 0) {
         element.onload = function () {
           _this.initialize(element);
@@ -787,8 +786,8 @@ var CropprCore = function () {
           _box$getAbsolutePoint2 = slicedToArray(_box$getAbsolutePoint, 2),
           originX = _box$getAbsolutePoint2[0],
           originY = _box$getAbsolutePoint2[1];
-      this.activeHandle = { handle: handle, originPoint: originPoint, originX: originX, originY: originY };
-      if (this.options.onCropStart !== null) {
+      this.activeHandle = { handle: handle, originPoint: originPoint, originX: originX, originY: originY
+      };if (this.options.onCropStart !== null) {
         this.options.onCropStart(this.getValue());
       }
     }
@@ -856,12 +855,15 @@ var CropprCore = function () {
         var ratioMode = isVerticalMovement ? 'width' : 'height';
         box.constrainToRatio(ratio, origin, ratioMode);
       }
-      var min = this.options.minSize;
-      var max = this.options.maxSize;
-      box.constrainToSize(max.width, max.height, min.width, min.height, origin, this.options.aspectRatio);
       var parentWidth = this.cropperEl.offsetWidth;
       var parentHeight = this.cropperEl.offsetHeight;
       box.constrainToBoundary(parentWidth, parentHeight, origin);
+      var min = this.options.minSize;
+      var max = this.options.maxSize;
+      box.constrainToSize(max.width, max.height, min.width, min.height, origin, this.options.aspectRatio);
+      if (box.x1 < 0 || box.y1 < 0 || box.x2 > container.width || box.y2 > container.height) {
+        return;
+      }
       this.box = box;
       this.redraw();
       if (this.options.onCropMove !== null) {
@@ -887,8 +889,7 @@ var CropprCore = function () {
       this.currentMove = {
         offsetX: mouseX - this.box.x1,
         offsetY: mouseY - this.box.y1
-      };
-      if (this.options.onCropStart !== null) {
+      };if (this.options.onCropStart !== null) {
         this.options.onCropStart(this.getValue());
       }
     }
@@ -982,8 +983,7 @@ var CropprCore = function () {
         onCropStart: null,
         onCropMove: null,
         onCropEnd: null
-      };
-      var aspectRatio = null;
+      };var aspectRatio = null;
       if (opts.aspectRatio !== undefined) {
         if (typeof opts.aspectRatio === 'number') {
           aspectRatio = opts.aspectRatio;
