@@ -27,7 +27,11 @@ function simulateMouseEvent(e) {
     'touchend': 'mouseup'
   }
 
-  touch.target.dispatchEvent(new MouseEvent(eventMap[e.type], {
+  const target = e.type === 'touchstart'
+    ? touch.target
+    : document;
+
+  target.dispatchEvent(new MouseEvent(eventMap[e.type], {
     bubbles: true,
     cancelable: true,
     view: window,
