@@ -4,10 +4,10 @@
 /**
  * Croppr.js
  * https://github.com/jamesssooi/Croppr.js
- * 
+ *
  * A JavaScript image cropper that's lightweight, awesome, and has
  * zero dependencies.
- * 
+ *
  * (C) 2017 James Ooi. Released under the MIT License.
  */
 
@@ -114,5 +114,17 @@ export default class Croppr extends CropprCore {
       this.options.onCropEnd(this.getValue());
     }
     return this;
+  }
+
+  /**
+   * Resizes crop region to new setting.
+   * @param Object - new options
+   */
+  setValue({x, y, width, height}) {
+    this
+      .resizeTo(width, height)
+      .moveTo(x, y)
+
+    return this
   }
 }

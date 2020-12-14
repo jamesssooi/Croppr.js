@@ -563,8 +563,7 @@ var CropprCore = function () {
     this._restore = {
       parent: element.parentNode,
       element: element
-    };
-    if (!deferred) {
+    };if (!deferred) {
       if (element.width === 0 || element.height === 0) {
         element.onload = function () {
           _this.initialize(element);
@@ -787,8 +786,8 @@ var CropprCore = function () {
           _box$getAbsolutePoint2 = slicedToArray(_box$getAbsolutePoint, 2),
           originX = _box$getAbsolutePoint2[0],
           originY = _box$getAbsolutePoint2[1];
-      this.activeHandle = { handle: handle, originPoint: originPoint, originX: originX, originY: originY };
-      if (this.options.onCropStart !== null) {
+      this.activeHandle = { handle: handle, originPoint: originPoint, originX: originX, originY: originY
+      };if (this.options.onCropStart !== null) {
         this.options.onCropStart(this.getValue());
       }
     }
@@ -887,8 +886,7 @@ var CropprCore = function () {
       this.currentMove = {
         offsetX: mouseX - this.box.x1,
         offsetY: mouseY - this.box.y1
-      };
-      if (this.options.onCropStart !== null) {
+      };if (this.options.onCropStart !== null) {
         this.options.onCropStart(this.getValue());
       }
     }
@@ -982,8 +980,7 @@ var CropprCore = function () {
         onCropStart: null,
         onCropMove: null,
         onCropEnd: null
-      };
-      var aspectRatio = null;
+      };var aspectRatio = null;
       if (opts.aspectRatio !== undefined) {
         if (typeof opts.aspectRatio === 'number') {
           aspectRatio = opts.aspectRatio;
@@ -1178,6 +1175,20 @@ var Croppr$1 = function (_CropprCore) {
       if (this.options.onCropEnd !== null) {
         this.options.onCropEnd(this.getValue());
       }
+      return this;
+    }
+    /**
+     * Resizes crop region to new setting.
+     * @param Object - new options
+     */
+  }, {
+    key: 'setValue',
+    value: function setValue(_ref) {
+      var x = _ref.x,
+          y = _ref.y,
+          width = _ref.width,
+          height = _ref.height;
+      this.resizeTo(width, height).moveTo(x, y);
       return this;
     }
   }]);

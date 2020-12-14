@@ -218,6 +218,22 @@ describe('Croppr behaviour', function() {
             instance.reset();
         });
 
+        it('should resize after setValue called ', function () {
+            const instance = new Croppr('#croppr', {});
+
+            instance.resizeTo(250, 250);
+            instance.moveTo(0, 0);
+
+            const [x1, y1, x2, y2] = [100, 100, 200, 200]
+
+            simulateSetValueCall(instance, x1, y1, x2, y2)
+
+            assert.equal(instance.box.x1, x1);
+            assert.equal(instance.box.y1, y1);
+            assert.equal(instance.box.x2, x2);
+            assert.equal(instance.box.y2, y2);
+        });
+
         it('should move box element', function() {
             instance.resizeTo(250, 250);
             instance.moveTo(0, 0);
@@ -336,6 +352,15 @@ function createMockCroppr(options, _deferred) {
         instance.initialize();
     }
     return instance;
+}
+
+function simulateSetValueCall(instance, x1, y1, x2, y2) {
+    instance.setValue({
+        x: x1,
+        y: y1,
+        width: x2 - x1,
+        height: y2 - y1,
+    })
 }
 
 function simulateHandleMove(instance, handle, mouseX, mouseY) {
