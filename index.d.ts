@@ -60,10 +60,10 @@ declare namespace Croppr {
     height: number
   }
 
-  export interface SizeValue extends Array<string | number> {
+  export interface SizeValue extends Array<string | number | undefined> {
     0: number,
     1: number,
-    2?: 'px' | '%'
+    2?: 'px' | '%' | undefined
   }
 
 }
