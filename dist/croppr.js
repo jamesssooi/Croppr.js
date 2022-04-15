@@ -577,21 +577,25 @@ var CropprCore = function () {
   createClass(CropprCore, [{
     key: 'initialize',
     value: function initialize(element) {
-      this.createDOM(element);
-      this.options.convertToPixels(this.cropperEl);
-      this.attachHandlerEvents();
-      this.attachRegionEvents();
-      this.attachOverlayEvents();
-      this.box = this.initializeBox(this.options);
-      this.redraw();
-      this._initialized = true;
-      if (this.options.onInitialize !== null) {
-        this.options.onInitialize(this);
-      }
+      var _this2 = this;
+      Promise.all(this.createDOM(element)).then(function () {
+        _this2.options.convertToPixels(_this2.cropperEl);
+        _this2.attachHandlerEvents();
+        _this2.attachRegionEvents();
+        _this2.attachOverlayEvents();
+        _this2.box = _this2.initializeBox(_this2.options);
+        _this2.redraw();
+        _this2._initialized = true;
+        if (_this2.options.onInitialize !== null) {
+          _this2.options.onInitialize(_this2);
+        }
+      });
     }
   }, {
     key: 'createDOM',
     value: function createDOM(targetEl) {
+      var _this3 = this;
+      var domPromises = [];
       this.containerEl = document.createElement('div');
       this.containerEl.className = 'croppr-container';
       this.eventBus = this.containerEl;
@@ -599,6 +603,11 @@ var CropprCore = function () {
       this.cropperEl = document.createElement('div');
       this.cropperEl.className = 'croppr';
       this.imageEl = document.createElement('img');
+      domPromises.push(new Promise(function (resolve) {
+        _this3.imageEl.onload = function () {
+          resolve();
+        };
+      }));
       this.imageEl.setAttribute('src', targetEl.getAttribute('src'));
       this.imageEl.setAttribute('alt', targetEl.getAttribute('alt'));
       this.imageEl.className = 'croppr-image';
@@ -616,13 +625,17 @@ var CropprCore = function () {
         this.handles.push(handle);
         handleContainerEl.appendChild(handle.el);
       }
-      this.cropperEl.appendChild(this.imageEl);
-      this.cropperEl.appendChild(this.imageClippedEl);
-      this.cropperEl.appendChild(this.regionEl);
-      this.cropperEl.appendChild(this.overlayEl);
-      this.cropperEl.appendChild(handleContainerEl);
-      this.containerEl.appendChild(this.cropperEl);
-      targetEl.parentElement.replaceChild(this.containerEl, targetEl);
+      domPromises.push(new Promise(function (resolve) {
+        _this3.cropperEl.appendChild(_this3.imageEl);
+        _this3.cropperEl.appendChild(_this3.imageClippedEl);
+        _this3.cropperEl.appendChild(_this3.regionEl);
+        _this3.cropperEl.appendChild(_this3.overlayEl);
+        _this3.cropperEl.appendChild(handleContainerEl);
+        _this3.containerEl.appendChild(_this3.cropperEl);
+        targetEl.parentElement.replaceChild(_this3.containerEl, targetEl);
+        resolve();
+      }));
+      return domPromises;
     }
     /**
      * Changes the image src.
@@ -631,10 +644,10 @@ var CropprCore = function () {
   }, {
     key: 'setImage',
     value: function setImage(src) {
-      var _this2 = this;
+      var _this4 = this;
       this.imageEl.onload = function () {
-        _this2.box = _this2.initializeBox(_this2.options);
-        _this2.redraw();
+        _this4.box = _this4.initializeBox(_this4.options);
+        _this4.redraw();
       };
       this.imageEl.src = src;
       this.imageClippedEl.src = src;
@@ -671,7 +684,7 @@ var CropprCore = function () {
   }, {
     key: 'redraw',
     value: function redraw() {
-      var _this3 = this;
+      var _this5 = this;
       var width = Math.round(this.box.width()),
           height = Math.round(this.box.height()),
           x1 = Math.round(this.box.x1),
@@ -679,17 +692,17 @@ var CropprCore = function () {
           x2 = Math.round(this.box.x2),
           y2 = Math.round(this.box.y2);
       window.requestAnimationFrame(function () {
-        _this3.regionEl.style.transform = 'translate(' + x1 + 'px, ' + y1 + 'px)';
-        _this3.regionEl.style.width = width + 'px';
-        _this3.regionEl.style.height = height + 'px';
-        _this3.imageClippedEl.style.clip = 'rect(' + y1 + 'px, ' + x2 + 'px, ' + y2 + 'px, ' + x1 + 'px)';
-        var center = _this3.box.getAbsolutePoint([.5, .5]);
-        var xSign = center[0] - _this3.cropperEl.offsetWidth / 2 >> 31;
-        var ySign = center[1] - _this3.cropperEl.offsetHeight / 2 >> 31;
+        _this5.regionEl.style.transform = 'translate(' + x1 + 'px, ' + y1 + 'px)';
+        _this5.regionEl.style.width = width + 'px';
+        _this5.regionEl.style.height = height + 'px';
+        _this5.imageClippedEl.style.clip = 'rect(' + y1 + 'px, ' + x2 + 'px, ' + y2 + 'px, ' + x1 + 'px)';
+        var center = _this5.box.getAbsolutePoint([.5, .5]);
+        var xSign = center[0] - _this5.cropperEl.offsetWidth / 2 >> 31;
+        var ySign = center[1] - _this5.cropperEl.offsetHeight / 2 >> 31;
         var quadrant = (xSign ^ ySign) + ySign + ySign + 4;
         var foregroundHandleIndex = -2 * quadrant + 8;
-        for (var i = 0; i < _this3.handles.length; i++) {
-          var handle = _this3.handles[i];
+        for (var i = 0; i < _this5.handles.length; i++) {
+          var handle = _this5.handles[i];
           var handleWidth = handle.el.offsetWidth;
           var handleHeight = handle.el.offsetHeight;
           var left = x1 + width * handle.position[0] - handleWidth / 2;

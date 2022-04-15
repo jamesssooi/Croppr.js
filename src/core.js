@@ -67,32 +67,33 @@ export default class CropprCore {
    * Initialize the Croppr instance
    */
   initialize(element) {
-    // Create DOM elements
-    this.createDOM(element);
+    // Create DOM elements and wait for loading image
+    Promise.all(this.createDOM(element)).then(() => {
+      // Process option values
+      this.options.convertToPixels(this.cropperEl);
 
-    // Process option values
-    this.options.convertToPixels(this.cropperEl);
+      // Listen for events from children
+      this.attachHandlerEvents();
+      this.attachRegionEvents();
+      this.attachOverlayEvents();
 
-    // Listen for events from children
-    this.attachHandlerEvents();
-    this.attachRegionEvents();
-    this.attachOverlayEvents();
+      // Bootstrap this cropper instance
+      this.box = this.initializeBox(this.options);
+      this.redraw();
 
-    // Bootstrap this cropper instance
-    this.box = this.initializeBox(this.options);
-    this.redraw();
-
-    // Set the initalized flag to true and call the callback
-    this._initialized = true;
-    if (this.options.onInitialize !== null) {
-      this.options.onInitialize(this);
-    }
+      // Set the initalized flag to true and call the callback
+      this._initialized = true;
+      if (this.options.onInitialize !== null) {
+        this.options.onInitialize(this);
+      }
+    });
   }
 
   /**
    * Create Croppr's DOM elements
    */
   createDOM(targetEl) {
+    let domPromises = [];
     // Create main container and use it as the main event listeners
     this.containerEl = document.createElement('div');
     this.containerEl.className = 'croppr-container';
@@ -105,6 +106,12 @@ export default class CropprCore {
 
     // Create image element
     this.imageEl = document.createElement('img');
+    // Adding promise of loaded image
+    domPromises.push(new Promise((resolve) => {
+      this.imageEl.onload = () => {
+        resolve();
+      }
+    }))
     this.imageEl.setAttribute('src', targetEl.getAttribute('src'));
     this.imageEl.setAttribute('alt', targetEl.getAttribute('alt'));
     this.imageEl.className = 'croppr-image';
@@ -134,16 +141,22 @@ export default class CropprCore {
       handleContainerEl.appendChild(handle.el);
     }
 
-    // And then we piece it all together!
-    this.cropperEl.appendChild(this.imageEl);
-    this.cropperEl.appendChild(this.imageClippedEl);
-    this.cropperEl.appendChild(this.regionEl);
-    this.cropperEl.appendChild(this.overlayEl);
-    this.cropperEl.appendChild(handleContainerEl);
-    this.containerEl.appendChild(this.cropperEl);
+    // Adding promise of finishing appending childs to DOM
+    domPromises.push(new Promise((resolve) => {
+      // And then we piece it all together!
+      this.cropperEl.appendChild(this.imageEl);
+      this.cropperEl.appendChild(this.imageClippedEl);
+      this.cropperEl.appendChild(this.regionEl);
+      this.cropperEl.appendChild(this.overlayEl);
+      this.cropperEl.appendChild(handleContainerEl);
+      this.containerEl.appendChild(this.cropperEl);
 
-    // And then finally insert it into the document
-    targetEl.parentElement.replaceChild(this.containerEl, targetEl);
+      // And then finally insert it into the document
+      targetEl.parentElement.replaceChild(this.containerEl, targetEl);
+      resolve();
+    }));
+
+    return domPromises;
   }
 
   /**
