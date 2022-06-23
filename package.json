@@ -39,7 +39,7 @@
     "chai": "^3.5.0",
     "clean-css": "^3.4.23",
     "imports-loader": "^0.7.0",
-    "jsdom": "^9.9.1",
+    "jsdom": "^16.5.0",
     "jsdom-global": "^2.1.1",
     "mocha": "^3.2.0",
     "onchange": "^3.2.1",
